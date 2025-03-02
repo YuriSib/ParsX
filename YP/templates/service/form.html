@@ -1,0 +1,28 @@
+{% extends 'flatpages/default.html' %}
+
+<form id="feedbackForm">
+    {% csrf_token %}
+    <input type="text" name="name" placeholder="Ваше имя" required>
+    <input type="email" name="email" placeholder="Ваш email" required>
+    <button type="submit">Отправить</button>
+</form>
+
+<div id="responseMessage"></div> <!-- Здесь появится ответ от сервера -->
+
+<script>
+document.getElementById("feedbackForm").addEventListener("submit", function(e) {
+    e.preventDefault();  // Останавливаем стандартную отправку формы
+
+    let formData = new FormData(this);  // Собираем данные формы
+
+    fetch("{% url 'send_feedback' %}", {  // Отправляем AJAX-запрос
+        method: "POST",
+        body: formData,
+        headers: { "X-Requested-With": "XMLHttpRequest" }  // Помечаем запрос как AJAX
+    })
+    .then(response => response.json())  // Получаем JSON-ответ
+    .then(data => {
+        document.getElementById("responseMessage").innerText = data.message;
+    });
+});
+</script>

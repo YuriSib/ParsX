@@ -1,0 +1,102 @@
+<!DOCTYPE html>
+{% load static %}
+{% load tags %}
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Парсинг</title>
+
+    <link href="{% static 'css/styles.css' %}" rel="stylesheet" type="text/css">
+</head>
+<body>
+    <header>
+    <!-- Responsive navbar-->
+        <nav class="navbar">
+            <div class="container">
+                <div id="navbarMenu" class="navbar-menu">
+                    <ul class="navbar-end">
+                        <li class="navbar-brand">
+                            <a href="/">
+                                <img src="{% static 'logo-1.svg' %}" class="logo" title="logo (1)">
+                            </a>
+                        </li>
+                        <div class="navbar-items">
+                            {% for category in categories %}
+                                <div class="navbar-item dropdown">
+                                    <li class="dropbtn">{{ category.name }}</li>
+                                    <div class="dropdown-content">
+                                        {% get_services category.id as services %}
+                                        {% for service in services %}
+                                            <a href="#">{{ service.name }}</a>
+                                        {% endfor %}
+                                    </div>
+                                </div>
+                            {% endfor %}
+                            <div class="navbar-item">
+                                <a class="item" title="О нас" href="https://www.parsic.ru/reviews.html">О нас</a>
+                            </div>
+                        </div>
+                        <li class="navbar__contact">
+                            <a href="https://web.telegram.org/k/#@YuriyMadeInRf">
+                            <img src="{% static 'icons-tg.svg' %}" class="logo" title="TG">
+                            </a>
+                            <a href="https://web.telegram.org/k/#@YuriyMadeInRf">
+                            <img src="{% static 'icons-whatsapp.svg' %}" class="logo" title="Whatsapp">
+                            </a>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+        </nav>
+    </header>
+<main>
+    <!-- Кнопка для открытия чата -->
+    <button class="chat-btn" id="chatBtn">💬</button>
+
+    <!-- Форма чата -->
+    <div class="chat-box" id="chatBox">
+        <header>Чат с нами</header>
+        <div class="messages" id="messages">
+            <!-- Сообщения чата будут появляться здесь -->
+        </div>
+        <input type="text" id="userMessage" placeholder="Ваше сообщение..." />
+        <button id="sendMessageBtn">Отправить</button>
+    </div>
+
+    <script>
+        // Получаем элементы
+        var chatBtn = document.getElementById("chatBtn");
+        var chatBox = document.getElementById("chatBox");
+        var sendMessageBtn = document.getElementById("sendMessageBtn");
+        var userMessage = document.getElementById("userMessage");
+        var messages = document.getElementById("messages");
+
+        // Открываем чат при клике на кнопку
+        chatBtn.onclick = function() {
+            chatBox.style.display = chatBox.style.display === "block" ? "none" : "block";
+        }
+
+        // Отправка сообщения при клике на кнопку "Отправить"
+        sendMessageBtn.onclick = function() {
+            var message = userMessage.value.trim();
+            if (message) {
+                // Добавляем новое сообщение в блок сообщений
+                var messageElement = document.createElement("p");
+                messageElement.textContent = "Вы: " + message;
+                messages.appendChild(messageElement);
+
+                // Очищаем поле ввода
+                userMessage.value = "";
+                // Автопрокрутка вниз
+                messages.scrollTop = messages.scrollHeight;
+            }
+        }
+
+        // Автопрокрутка чата вниз при добавлении нового сообщения
+        messages.scrollTop = messages.scrollHeight;
+    </script>
+
+</main>
+<footer></footer>
+</body>
+</html>
