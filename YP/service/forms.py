@@ -1,27 +1,45 @@
 from django import forms
-from .models import Order
+from django.utils.translation import gettext_lazy
 
 
-COMMUNICATION_CHOICES = [
-    ('email', 'Email'),
-    ('phone', 'Телефон'),
-    ('telegram', 'Telegram'),
-]
-
-
-class OrderForm(forms.ModelForm):
-    communication_method = forms.ChoiceField(
-        choices=COMMUNICATION_CHOICES,
-        widget=forms.Select(attrs={'class': 'form-control'}),
-        label="Способ связи"
+class OrderForm(forms.Form):
+    customer_name = forms.CharField(
+        label=gettext_lazy("Имя"),
+        max_length=50,
+        widget=forms.TextInput(
+            attrs={
+                'autocomplete': 'name',  # подсказка браузеру для автозаполнения
+                'class': 'form-control',  # добавляем Bootstrap в поле
+            }
+        )
     )
-
-    class Meta:
-        model = Order
-        fields = ['customer_name', 'communication_method', 'contact_data', 'description']
-        labels = {
-            'customer_name': 'Имя',
-            'communication_method': 'Способ связи',
-            'contact_data': 'Контактные данные',
-            'description': 'Описание задачи',
-        }
+    communication_method = forms.ChoiceField(  # Выпадающий список
+        label=gettext_lazy("Выберите средство связи"),
+        choices=[
+            ('phone_number', 'По телефону'),
+            ('telegram', 'Telegram'),
+            ('whatsapp', 'WhatsApp'),
+            ('email', 'E-mail'),
+        ],
+        widget=forms.Select(attrs={'class': 'form-control'})
+    )
+    contact_data = forms.CharField(
+        label=gettext_lazy("Контактные данные"),
+        strip=False,
+        widget=forms.TextInput(
+            attrs={
+                "autocomplete": "phone",
+                'class': 'form-control',
+                'placeholder': 'Ваши контактные данные',
+            }),
+    )
+    description = forms.CharField(
+        label=gettext_lazy("Описание задачи"),
+        strip=False,
+        widget=forms.Textarea(
+            attrs={
+                'class': 'form-control',
+                'rows': 5,  # определяем количество строк
+                'placeholder': 'Опишите вашу задачу...',
+            }),
+    )

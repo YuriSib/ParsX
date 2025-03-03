@@ -24,6 +24,7 @@ urlpatterns = [
     # path('content', include('content.urls')),
     path('', include('service.urls')),
     path('admin/', admin.site.urls),
+    path('users/', include('users.urls')),
 ]
 
 if settings.DEBUG:

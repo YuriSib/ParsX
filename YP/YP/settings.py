@@ -42,6 +42,8 @@ INSTALLED_APPS = [
     'service',
     'content',
     # 'django.contrib.sites.models.Site',
+    'users'
+
 ]
 
 MIDDLEWARE = [
@@ -67,6 +69,7 @@ TEMPLATES = [
                 'django.template.context_processors.request',
                 'django.contrib.auth.context_processors.auth',
                 'django.contrib.messages.context_processors.messages',
+                'YP.context_processor.get_context_data'
             ],
         },
     },
@@ -128,3 +131,5 @@ STATIC_ROOT = BASE_DIR / "staticfiles"
 # https://docs.djangoproject.com/en/5.1/ref/settings/#default-auto-field
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
+
+AUTH_USER_MODEL = 'users.User'

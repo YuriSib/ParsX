@@ -1,28 +1,41 @@
 {% extends 'flatpages/default.html' %}
 
-<form id="feedbackForm">
-    {% csrf_token %}
-    <input type="text" name="name" placeholder="Ваше имя" required>
-    <input type="email" name="email" placeholder="Ваш email" required>
+<h2>Заполните форму своими данными:</h2>
+
+<form id="feedbackForm" method="POST">
+    <input type="text" name="name" placeholder="Ваше имя">
+    <input type="email" name="email" placeholder="Ваш email">
+    <textarea name="message" placeholder="Сообщение"></textarea>
     <button type="submit">Отправить</button>
 </form>
 
 <div id="responseMessage"></div> <!-- Здесь появится ответ от сервера -->
 
 <script>
-document.getElementById("feedbackForm").addEventListener("submit", function(e) {
-    e.preventDefault();  // Останавливаем стандартную отправку формы
+document.addEventListener("DOMContentLoaded", function() {
+    let form = document.getElementById("feedbackForm");
+    form.addEventListener("submit", function(e) {
+        e.preventDefault();
 
-    let formData = new FormData(this);  // Собираем данные формы
+        let formData = new FormData(form);
+        formData.append('csrfmiddlewaretoken', '{{ csrf_token }}');  // Добавляем CSRF токен
 
-    fetch("{% url 'send_feedback' %}", {  // Отправляем AJAX-запрос
-        method: "POST",
-        body: formData,
-        headers: { "X-Requested-With": "XMLHttpRequest" }  // Помечаем запрос как AJAX
-    })
-    .then(response => response.json())  // Получаем JSON-ответ
-    .then(data => {
-        document.getElementById("responseMessage").innerText = data.message;
+        fetch("{% url 'send_feedback' %}", {
+            method: "POST",  // Указываем явно, что это POST-запрос
+            body: formData,
+            headers: {
+                "X-Requested-With": "XMLHttpRequest",  // Указывает, что это AJAX-запрос
+                "Content-Type": "application/x-www-form-urlencoded",  // Если отправляешь форму
+                "X-CSRFToken": "{{ csrf_token }}"  // Добавляем CSRF-токен
+            }
+            })
+        .then(response => response.json())  // Обрабатываем JSON-ответ
+        .then(data => {
+            console.log("Ответ сервера:", data);
+            document.getElementById("responseMessage").innerText = data.message || data.error;
+        })
+        .catch(error => console.error("Ошибка AJAX:", error));
     });
 });
 </script>
+

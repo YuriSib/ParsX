@@ -1,7 +1,5 @@
 from django.shortcuts import render
-from django.views.generic import ListView
-from django.http import HttpResponseRedirect
-from django.views.decorators.csrf import csrf_exempt
+from django.views.generic import ListView, View
 from django.http import JsonResponse
 
 from .models import Category, Service
@@ -18,6 +16,31 @@ class CategoryList(ListView):
         return Category.objects.filter()
 
 
+class OrderAjaxView(View):
+    def post(self, request):
+        customer_name = request.POST.get('customer_name')
+        communication_method = request.POST.get('communication_method')
+        contact_data = request.POST.get('contact_data')
+        description = request.POST.get('description')
+        print(customer_name, communication_method, contact_data, description)
+
+        if customer_name and contact_data:
+            return JsonResponse(
+                data={
+                    'status': 201
+                },
+                status=200
+            )
+        return JsonResponse(
+            data={
+                'status': 400,
+                'error': 'Введите ваше имя или контактные данные!'
+            },
+            status=200
+        )
+
+
+
 def get_service_list(request):
     """Выводит список услуг"""
     services = Service.objects.all()  # Получаем все категории
@@ -25,26 +48,4 @@ def get_service_list(request):
     return render(request, 'default.html', {'services': services})
 
 
-def profile_view(request):
-    if request.method == "POST":
-        form = OrderForm(request.POST)
-        form.save()
-        return HttpResponseRedirect('/')
-    form = OrderForm()
-    return render(request, 'service/order.html', {'form': form})
 
-
-@csrf_exempt  # Временно отключаем CSRF (небезопасно для продакшена)
-def send_feedback(request):
-    print("Метод запроса:", request.method)  # Логируем метод
-    print("POST-данные:", request.POST)  # Логируем содержимое POST
-
-    if request.method == "POST":
-        name = request.POST.get("name")
-        email = request.POST.get("email")
-
-        # Можно сохранить данные в БД, отправить email и т. д.
-
-        return JsonResponse({"message": f"Спасибо, {name}! Ваш отзыв отправлен."})
-
-    return JsonResponse({"error": "Некорректный запрос"}, status=400)
