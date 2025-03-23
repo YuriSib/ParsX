@@ -1,19 +1,20 @@
 from django.shortcuts import render
-from django.views.generic import ListView, View
+from django.views.generic import ListView, View, CreateView
 from django.http import JsonResponse
+from django.urls import reverse_lazy
 
-from .models import Category, Service
-from .forms import OrderForm
+from .models import Category, Service, Order
+from .forms import OrderForm, CategoryForm, ServiceForm
+from YP.logger import logger
 
 
-class CategoryList(ListView):
+class MainPage(ListView):
     model = Category
     ordering = 'name'
-    template_name = 'service/category_list.html'
+    template_name = 'service/main.html'
     context_object_name = 'categories'
 
-    def get_queryset(self):
-        return Category.objects.filter()
+    success_url = reverse_lazy('')
 
 
 class OrderAjaxView(View):
@@ -25,6 +26,15 @@ class OrderAjaxView(View):
         print(customer_name, communication_method, contact_data, description)
 
         if customer_name and contact_data:
+            logger.warning(f'Посетитель {customer_name} ({contact_data}/{communication_method}) '
+                           f'оставил заявку на сайте: \n{description}')
+            Order.objects.create(
+                name='Название по умолчанию',
+                customer_name=customer_name,
+                description=description,
+                communication_method=communication_method,
+                contact_data=contact_data,
+            )
             return JsonResponse(
                 data={
                     'status': 201
@@ -40,12 +50,23 @@ class OrderAjaxView(View):
         )
 
 
-
 def get_service_list(request):
     """Выводит список услуг"""
     services = Service.objects.all()  # Получаем все категории
-    print('request', request)
     return render(request, 'default.html', {'services': services})
 
 
+class CategoryCreate(CreateView):
+    form_class = CategoryForm
+    model = Category
+    template_name = 'service/category_create.html'
 
+    success_url = reverse_lazy('category_list')
+
+
+class ServiceCreate(CreateView):
+    form_class = ServiceForm
+    model = Service
+    template_name = 'service/service_create.html'
+
+    success_url = reverse_lazy('category_list')

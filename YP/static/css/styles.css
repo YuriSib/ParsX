@@ -3,6 +3,11 @@ ul {
     padding-left: 0; /* Убирает отступ слева */
 }
 
+footer {
+    background-color: var(--bs-gray-600);
+    padding: 60px 30px 39px;
+}
+
 .navbar-end {
     display: flex;  /* Flexbox для горизонтального расположения */
     gap: 30px;      /* Отступы между элементами */

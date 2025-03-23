@@ -1,5 +1,36 @@
 from django import forms
 from django.utils.translation import gettext_lazy
+from .models import Category, Service
+
+
+class CategoryForm(forms.ModelForm):
+    class Meta:
+        model = Category
+        fields = ['name', 'description']
+        widgets = {
+            'time_create': forms.DateInput(attrs={'type': 'date'}),
+        }
+
+
+class ServiceForm(forms.ModelForm):
+    category = forms.ModelChoiceField(
+        queryset=Category.objects.all(),
+        empty_label="Выберите категорию",
+        label="Категория",
+        widget=forms.Select(attrs={'class': 'form-control'})
+    )
+
+    class Meta:
+        model = Service
+        fields = ['name', 'description', 'category']
+        labels = {
+            'name': 'Название услуги',
+            'description': 'Описание',
+            'category_id': 'Категория'
+        }
+        widgets = {
+            'name': forms.TextInput(attrs={'class': 'form-control'}),
+        }
 
 
 class OrderForm(forms.Form):
