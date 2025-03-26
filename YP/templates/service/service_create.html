@@ -1,0 +1,18 @@
+{% extends 'flatpages/default.html' %}
+
+{% block content %}
+<main class="main">
+    <section class="first-screen">
+        <div class="container">
+            <h1>Создание новой услуги</h1>
+            <hr>
+            <form action="" method="post">
+                {% csrf_token %}
+                {{ form.media }}
+                {{ form.as_p }}
+                <input type="submit" value="Save" />
+            </form>
+        </div>
+    </section>
+</main>
+{% endblock content %}

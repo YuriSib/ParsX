@@ -1,7 +1,8 @@
 from django.shortcuts import render
-from django.views.generic import ListView, View, CreateView
+from django.views.generic import ListView, View, CreateView, DetailView, UpdateView
 from django.http import JsonResponse
 from django.urls import reverse_lazy
+from django.contrib.auth.mixins import LoginRequiredMixin, PermissionRequiredMixin
 
 from .models import Category, Service, Order
 from .forms import OrderForm, CategoryForm, ServiceForm
@@ -69,4 +70,18 @@ class ServiceCreate(CreateView):
     model = Service
     template_name = 'service/service_create.html'
 
+    success_url = reverse_lazy('category_list')
+
+
+class ServiceDetail(DetailView):
+    model = Service
+    template_name = 'service/service.html'
+    context_object_name = 'service'
+
+
+class ServiceEdit(LoginRequiredMixin, UpdateView):
+    permission_required = ('ads.change_ads',)
+    form_class = ServiceForm
+    model = Service
+    template_name = 'service/service_edit.html'
     success_url = reverse_lazy('category_list')

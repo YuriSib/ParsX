@@ -1,0 +1,109 @@
+.advantages {
+  margin: 60px 0 92px;
+}
+@media (max-width: 1024px) {
+  .advantages {
+    margin: 50px 0;
+  }
+}
+.advantages__wrapper {
+  display: -webkit-box;
+  display: -ms-flexbox;
+  display: flex;
+  -webkit-box-align: start;
+      -ms-flex-align: start;
+          align-items: flex-start;
+  gap: 20px;
+}
+@media (max-width: 768px) {
+  .advantages__wrapper {
+    -ms-flex-wrap: wrap;
+        flex-wrap: wrap;
+    -webkit-box-pack: center;
+        -ms-flex-pack: center;
+            justify-content: center;
+  }
+}
+.advantages__content {
+  -webkit-box-flex: 1;
+      -ms-flex: 1 1 auto;
+          flex: 1 1 auto;
+}
+.advantages__banner {
+  display: -webkit-box;
+  display: -ms-flexbox;
+  display: flex;
+  -webkit-box-align: center;
+      -ms-flex-align: center;
+          align-items: center;
+  -webkit-box-pack: center;
+      -ms-flex-pack: center;
+          justify-content: center;
+  -webkit-box-orient: vertical;
+  -webkit-box-direction: normal;
+      -ms-flex-direction: column;
+          flex-direction: column;
+  -webkit-box-flex: 0;
+      -ms-flex: 0 0 380px;
+          flex: 0 0 380px;
+  min-height: 546px;
+  padding: 24px;
+  -webkit-box-sizing: border-box;
+          box-sizing: border-box;
+  border-radius: 10px 100px;
+  background: url(../assets/advantages-banner-bg.jpg) center/cover no-repeat;
+}
+@media (max-width: 768px) {
+  .advantages__banner {
+    -webkit-box-flex: 1;
+        -ms-flex: 1 1 auto;
+            flex: 1 1 auto;
+    min-height: 360px;
+    border-radius: 10px 50px;
+  }
+}
+.advantages__banner-title {
+  font-weight: 700;
+  font-size: 25px;
+  text-align: center;
+  color: #000;
+}
+.advantages__banner-button {
+  display: inline-block;
+  padding: 22px 44px;
+  font-weight: 400;
+  font-size: 20px;
+  text-align: center;
+  color: #000;
+  border: none;
+  border-radius: 10px;
+  background-color: #c4d63d;
+  -webkit-transition-property: background-color, color;
+  transition-property: background-color, color;
+  -webkit-transition-timing-function: ease-in-out;
+          transition-timing-function: ease-in-out;
+  -webkit-transition-duration: 0.2s;
+          transition-duration: 0.2s;
+  cursor: pointer;
+}
+.advantages__banner-button:hover {
+  background-color: #d8ef2a;
+}
+.advantages__title {
+  margin: 0;
+  font-weight: 700;
+  font-size: 24px;
+  color: #000;
+}
+.advantages__subtitle {
+  margin: 24px 0 0;
+  font-weight: 700;
+  font-size: 20px;
+  color: #000;
+}
+.advantages__text {
+  margin: 0;
+  font-weight: 400;
+  font-size: 20px;
+  color: #000;
+}

@@ -1,0 +1,27 @@
+.how-parse {
+  margin: 92px 0 80px;
+}
+@media (max-width: 1024px) {
+  .how-parse {
+    margin: 50px 0;
+  }
+}
+.how-parse__title {
+  margin: 0 0 24px;
+  font-weight: 700;
+  font-size: 24px;
+  color: #000;
+}
+.how-parse__text {
+  margin: 0;
+  font-weight: 400;
+  font-size: 20px;
+  color: #000;
+}
+.how-parse__list {
+  margin: 0;
+  padding-left: 24px;
+  font-weight: 400;
+  font-size: 20px;
+  color: #000;
+}

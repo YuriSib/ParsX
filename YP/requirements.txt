@@ -1,0 +1,14 @@
+Django==5.1
+aiohttp==3.10.5
+APScheduler==3.10.4
+django-apscheduler==0.6.2
+pillow==10.4.0
+requests==2.32.3
+urllib3==2.2.2
+celery==5.4.0
+django-celery-beat==2.7.0
+django-timezone-field==7.0
+psycopg==3.2.3
+loguru==0.7.2
+transliterate==1.10.2
+django-ckeditor==6.7.2

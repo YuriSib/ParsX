@@ -8,7 +8,7 @@
                         aria-label="Close"></button>
             </div>
             <div class="alert alert-danger d-none" role="alert"></div>
-            <form action="{% url 'create_order' %}" method="POST" id="form_ajax"> <!-- id="form_ajax" - для того, чтобы передать форму в js скрипт -->
+            <form action="{% url 'service:create_order' %}" method="POST" id="form_ajax"> <!-- id="form_ajax" - для того, чтобы передать форму в js скрипт -->
                 <div class="modal-body">
                     {{ create_order }}
                     {% csrf_token %}

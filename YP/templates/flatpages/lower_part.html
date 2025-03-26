@@ -1,0 +1,43 @@
+{% load static %}
+{% load tags %}
+
+<section class="how-it-work">
+    <div class="container">
+        <h2 class="how-it-work__title">Как это работает</h2>
+
+        <div class="how-it-work__content">
+            <figure class="how-it-work__figure">
+              <img
+                class="how-it-work__figure-image"
+                src="{% static 'assets/how-it-work.png' %}"
+                alt="how-it-work"
+              />
+            </figure>
+
+            <ol class="how-it-work__list">
+              <li class="how-it-work__list-item">
+                Вы описываете, какие данные вам нужны, их структуру, указываете сайты.
+              </li>
+              <li class="how-it-work__list-item">Мы создаем индивидуальный парсер под задачу.</li>
+              <li class="how-it-work__list-item">
+                Предоставляем готовый отчет в удобном формате (CSV, JSON, Excel, API).
+              </li>
+            </ol>
+        </div>
+    </div>
+</section>
+
+<section class="parse-target">
+    <div class="container">
+        <h2 class="parse-target__title">Цена парсинга</h2>
+        <div class="parse-target__text">
+            Стоимость рассчитывается исходя из поставленных задач и сложности. Также учитывается
+            уровень защиты и объем данных. Автоматизация сбора обработки данных стоит от 1000 руб.
+            Свяжитесь с нами для уточнения деталей.
+        </div>
+
+        <div class="parse-target__calc">
+            <button class="parse-target__calc-button" type="button" data-bs-toggle="modal" data-bs-target="#login_ajax">Рассчитать стоимость</button>
+        </div>
+    </div>
+</section>

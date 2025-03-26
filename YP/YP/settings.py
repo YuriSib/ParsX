@@ -12,6 +12,8 @@ https://docs.djangoproject.com/en/5.1/ref/settings/
 import os
 from pathlib import Path
 
+from config import DJANGO_SECRET_KEY, DB_NAME, DB_USERNAME, DB_PASSWORD, HOST
+
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
 
@@ -25,7 +27,7 @@ SECRET_KEY = 'django-insecure-tn!0kya#l3^y_2te02hbbuh$q)k6^7wa(3v0ab!!q&+u094i!_
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS = ['37.252.17.82', 'localhost', '127.0.0.1', '127.0.0.2', 'yp_postgres', '172.18.0.2']
 
 
 # Application definition
@@ -40,6 +42,9 @@ INSTALLED_APPS = [
     'django.contrib.sites',
     'django.contrib.flatpages',
 
+    'ckeditor',
+    'ckeditor_uploader',
+
     'communication',
     'service',
     'content',
@@ -47,6 +52,15 @@ INSTALLED_APPS = [
     'users'
 
 ]
+
+CKEDITOR_UPLOAD_PATH = "uploads/"
+CKEDITOR_CONFIGS = {
+    'default': {
+        'toolbar': 'full',
+        'height': 300,
+        'width': '100%',
+    },
+}
 
 SITE_ID = 1
 
@@ -87,10 +101,22 @@ WSGI_APPLICATION = 'YP.wsgi.application'
 # Database
 # https://docs.djangoproject.com/en/5.1/ref/settings/#databases
 
+# DATABASES = {
+#     'default': {
+#         'ENGINE': 'django.db.backends.sqlite3',
+#         'NAME': BASE_DIR / 'db.sqlite3',
+#     }
+# }
+
+
 DATABASES = {
     'default': {
-        'ENGINE': 'django.db.backends.sqlite3',
-        'NAME': BASE_DIR / 'db.sqlite3',
+        'ENGINE': 'django.db.backends.postgresql',
+        'NAME': 'YP_DB',  # Название вашей базы данных
+        'USER': 'postgres',  # Имя пользователя базы данных
+        'PASSWORD': 'jQhdcM,s1@ULs?',  # Пароль для подключения
+        'HOST': 'yp_postgres',  # Это имя контейнера
+        'PORT': '5432',  # Порт, на котором слушает база данных
     }
 }
 

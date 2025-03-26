@@ -1,0 +1,13 @@
+{% extends 'flatpages/default.html' %}
+
+
+{% block content %}
+    <main class="main">
+        <section class="first-screen">
+            <div class="container">
+                {{ service.description|safe }}
+            </div>
+        </section>
+    </main>
+{% endblock content %}
+

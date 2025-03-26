@@ -1,56 +1,75 @@
 {% load static %}
 {% load tags %}
 
-<nav class="navbar navbar-expand-lg bg-body-tertiary">
-  <div class="container">
-    <a class="navbar-brand" href="/">
-      <img src="/static/logo-1.png" alt="Your-parser" width="50%" height="50%">
-    </a>
-    <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Переключатель навигации">
-      <span class="navbar-toggler-icon"></span>
-    </button>
-    <div class="collapse navbar-collapse" id="navbarSupportedContent">
-      <ul class="navbar-nav me-auto mb-2 mb-lg-0">
-        <li class="nav-item text-nowrap">
-          <a class="nav-link active" aria-current="page" href="#">Контакты</a>
-        </li>
-        <li class="nav-item text-nowrap">
-          <a class="nav-link" href="#">О нас</a>
-        </li>
-        <li class="nav-item dropdown">
-          <a class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false">Услуги</a>
-          <ul class="dropdown-menu">
-            {% get_services as services %}
-            {% for service in services %}
-              <li><a class="dropdown-item" href="#">{{ service.name }}</a></li>
-            {% endfor %}
-          </ul>
-        </li>
-        <li class="nav-item text-nowrap">
-          <a class="nav-link disabled">Блог</a>
-        </li>
-        {% if request.user.is_authenticated %}
-          {% if request.user.is_superuser %}
-            <li class="nav-item text-nowrap">
-              <a class="nav-link" href="{% url 'create_service' %}">Добавить услугу</a>
-            </li>
-            <li class="nav-item text-nowrap">
-              <a class="nav-link" href="#">Управление услугами</a>
-            </li>
-          {% endif %}
-        {% endif %}
-      </ul>
-      <form class="container-fluid justify-content-start">
-          <button class="btn btn-outline-success me-2" type="button" data-bs-toggle="modal" data-bs-target="#login_ajax">Оставить заявку</button>
-      </form>
-      <div class="container">
-        <a class="navbar-brand" href="https://web.telegram.org/k/#@BIK_booking_bot" target="_blank">
-          <i class="fa fa-telegram" aria-hidden="true" style="font-size: 28px; color:#00a3fe"></i>
-        </a>
-        <a class="navbar-brand" href="https://web.telegram.org/k/#@BIK_booking_bot" target="_blank">
-          <i class="fa fa-whatsapp" aria-hidden="true" style="font-size: 28px; color:green"></i>
-        </a>
-      </div>
-    </div>
-  </div>
-</nav>
+<div class="container">
+        <div class="header__wrapper">
+          <div class="header__logo">
+            <a class="header__logo-link" href="#">
+              <img class="header__logo-link-image" src="{% static 'assets/logo.png' %}" alt="logo" />
+            </a>
+          </div>
+
+          <div class="header__menu">
+            <div class="header__menu-wrapper">
+              <nav class="header__nav">
+                <ul class="header__nav-menu">
+                  <li class="header__nav-menu-item">
+                    <a class="header__nav-menu-item-link" href="#">Контакты</a>
+                  </li>
+                  <li class="header__nav-menu-item">
+                    <a class="header__nav-menu-item-link" href="#">О нас</a>
+                  </li>
+                  <li class="header__nav-menu-item">
+                    <a class="header__nav-menu-item-link" href="#">Услуги</a>
+                      <ul class="header__nav-submenu">
+                        {% get_services as services %}
+                          {% for service in services %}
+
+                              <li class="header__nav-submenu-item">
+                                <a class="header__nav-submenu-item-link" href="{% url 'service:service_detail' service.id %}">{{ service.name }}</a>
+                              </li>
+                          {% endfor %}
+                      </ul>
+                  </li>
+                  <li class="header__nav-menu-item">
+                    <a class="header__nav-menu-item-link" href="#">Блог</a>
+                  </li>
+                  {% if request.user.is_authenticated %}
+                    {% if request.user.is_superuser %}
+                      <li class="nav-item text-nowrap">
+                        <a class="nav-link" href="{% url 'service:create_service' %}">Добавить услугу</a>
+                      </li>
+                    {% endif %}
+                  {% endif %}
+                </ul>
+              </nav>
+
+              <div class="header__contacts">
+                <div class="header__contacts-list">
+                  <a class="header__contacts-list-link" href="mailto:inf0@your-parser.ru">
+                    inf0@your-parser.ru
+                  </a>
+                  <a class="header__contacts-list-link" href="tel:+79517684792"> +79517684792 </a>
+                </div>
+
+                <div class="header__contacts-social">
+                  <a class="header__contacts-social-link header__contacts-social-link_tg" href="#">
+                    TG
+                  </a>
+                  <a class="header__contacts-social-link header__contacts-social-link_wp" href="#">
+                    WP
+                  </a>
+                </div>
+              </div>
+
+              <div class="header__callback">
+                <button class="header__callback header__callback-button" type="button" data-bs-toggle="modal" data-bs-target="#login_ajax">Оставить заявку</button>
+              </div>
+            </div>
+          </div>
+
+          <div class="header__burger">
+            <button class="header__burger-button"></button>
+          </div>
+        </div>
+</div>
