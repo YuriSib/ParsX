@@ -1,7 +1,5 @@
 from django.db import models
 
-from ckeditor.fields import RichTextField
-
 
 class Category(models.Model):
     """Категории услуг (например, парсинг товаров, новостей, объявлений)"""
@@ -15,7 +13,7 @@ class Category(models.Model):
 class Service(models.Model):
     """Непосредственно услуги"""
     name = models.CharField(max_length=255, unique=True)
-    description = RichTextField()
+    description = models.TextField()
     category = models.ForeignKey(Category, on_delete=models.SET_NULL, null=True, blank=True)
 
     def __str__(self):

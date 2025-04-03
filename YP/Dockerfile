@@ -1,5 +1,4 @@
-FROM python:3.10.9
-
+FROM python:3.10
 
 SHELL ["/bin/bash", "-c"]
 
@@ -18,6 +17,7 @@ RUN apt-get update && apt-get install -y nodejs npm
 RUN npm install -g pm2
 RUN pip install gunicorn
 RUN apt-get update && apt-get install -y nano
+RUN apt-get install -y nginx
 
 # Выполняю команды, необходимые для поднятия проекта
 RUN pip install --upgrade pip

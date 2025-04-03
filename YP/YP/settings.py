@@ -27,7 +27,7 @@ SECRET_KEY = 'django-insecure-tn!0kya#l3^y_2te02hbbuh$q)k6^7wa(3v0ab!!q&+u094i!_
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = ['37.252.17.82', 'localhost', '127.0.0.1', '127.0.0.2', 'yp_postgres', '172.18.0.2']
+ALLOWED_HOSTS = ['parsx.ru', '37.252.17.82', 'localhost', '127.0.0.1', 'yp_postgres']
 
 
 # Application definition
@@ -42,9 +42,6 @@ INSTALLED_APPS = [
     'django.contrib.sites',
     'django.contrib.flatpages',
 
-    'ckeditor',
-    'ckeditor_uploader',
-
     'communication',
     'service',
     'content',
@@ -53,14 +50,6 @@ INSTALLED_APPS = [
 
 ]
 
-CKEDITOR_UPLOAD_PATH = "uploads/"
-CKEDITOR_CONFIGS = {
-    'default': {
-        'toolbar': 'full',
-        'height': 300,
-        'width': '100%',
-    },
-}
 
 SITE_ID = 1
 
@@ -157,7 +146,10 @@ USE_TZ = True
 
 STATIC_URL = '/static/'
 STATICFILES_DIRS = [os.path.join(BASE_DIR, "static")]
-STATIC_ROOT = BASE_DIR / "staticfiles"
+STATIC_ROOT = os.path.join(BASE_DIR, 'staticfiles')
+
+MEDIA_URL = '/media/'
+MEDIA_ROOT = os.path.join(BASE_DIR, 'media/')
 
 # Default primary key field type
 # https://docs.djangoproject.com/en/5.1/ref/settings/#default-auto-field

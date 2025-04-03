@@ -1,10 +1,12 @@
 {% load static %}
 {% load tags %}
 
+<script src="https://kit.fontawesome.com/018b9a4921.js" crossorigin="anonymous"></script>
+
 <div class="container">
         <div class="header__wrapper">
           <div class="header__logo">
-            <a class="header__logo-link" href="#">
+            <a class="header__logo-link" href="/">
               <img class="header__logo-link-image" src="{% static 'assets/logo.png' %}" alt="logo" />
             </a>
           </div>
@@ -22,17 +24,16 @@
                   <li class="header__nav-menu-item">
                     <a class="header__nav-menu-item-link" href="#">Услуги</a>
                       <ul class="header__nav-submenu">
-                        {% get_services as services %}
-                          {% for service in services %}
-
-                              <li class="header__nav-submenu-item">
-                                <a class="header__nav-submenu-item-link" href="{% url 'service:service_detail' service.id %}">{{ service.name }}</a>
-                              </li>
-                          {% endfor %}
+                        <li class="header__nav-submenu-item">
+                          <a class="header__nav-submenu-item-link" href="/service/parsing_tovarov">Парсинг товаров</a>
+                        </li>
+                        <li class="header__nav-submenu-item">
+                          <a class="header__nav-submenu-item-link" href="/service/sbor_bazy_klientov">Сбор базы компаний</a>
+                        </li>
+                        <li class="header__nav-submenu-item">
+                          <a class="header__nav-submenu-item-link" href="/service/parsing_konkurentov">Парсинг конкурентов</a>
+                        </li>
                       </ul>
-                  </li>
-                  <li class="header__nav-menu-item">
-                    <a class="header__nav-menu-item-link" href="#">Блог</a>
                   </li>
                   {% if request.user.is_authenticated %}
                     {% if request.user.is_superuser %}
@@ -46,18 +47,18 @@
 
               <div class="header__contacts">
                 <div class="header__contacts-list">
-                  <a class="header__contacts-list-link" href="mailto:inf0@your-parser.ru">
-                    inf0@your-parser.ru
+                  <a class="header__contacts-list-link" href="mailto:info@parsx.ru">
+                    info@parsx.ru
                   </a>
                   <a class="header__contacts-list-link" href="tel:+79517684792"> +79517684792 </a>
                 </div>
 
                 <div class="header__contacts-social">
-                  <a class="header__contacts-social-link header__contacts-social-link_tg" href="#">
-                    TG
+                  <a class="navbar-brand" href="https://web.telegram.org/k/#@YuriyMadeInRf" target="_blank">
+                    <i class="fa fa-telegram" aria-hidden="true" style="font-size: 34px; color:#00a3fe"></i>
                   </a>
-                  <a class="header__contacts-social-link header__contacts-social-link_wp" href="#">
-                    WP
+                  <a class="navbar-brand" href="https://wa.me/79517684792?text=" target="_blank">
+                    <i class="fa fa-whatsapp" aria-hidden="true" style="font-size: 34px; color:green"></i>
                   </a>
                 </div>
               </div>

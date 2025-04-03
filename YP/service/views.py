@@ -27,6 +27,9 @@ class OrderAjaxView(View):
         print(customer_name, communication_method, contact_data, description)
 
         if customer_name and contact_data:
+            logger.warning('Внимание!')
+            logger.warning('Внимание!')
+            logger.warning('Внимание!')
             logger.warning(f'Посетитель {customer_name} ({contact_data}/{communication_method}) '
                            f'оставил заявку на сайте: \n{description}')
             Order.objects.create(
@@ -85,3 +88,15 @@ class ServiceEdit(LoginRequiredMixin, UpdateView):
     model = Service
     template_name = 'service/service_edit.html'
     success_url = reverse_lazy('category_list')
+
+
+def parsing_tovarov(request):
+    return render(request, 'service/parsing_tovarov.html')
+
+
+def sbor_bazy_klientov(request):
+    return render(request, 'service/sbor_bazy_klientov.html')
+
+
+def parsing_konkurentov(request):
+    return render(request, 'service/parsing_konkurentov.html')

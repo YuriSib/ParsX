@@ -20,6 +20,7 @@ services:
       - yp_postgres
     volumes:
       - ./:/YP
+      - ./staticfiles:/YP/staticfiles
     env_file:
       - .env
     ports:
