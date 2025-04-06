@@ -4,44 +4,36 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="5fed4f6c-6739-4a7d-9788-7aec8ad5eec3" name="Changes" comment="Закончил работу над frontend частью модального окна заявки.">
+    <list default="true" id="5fed4f6c-6739-4a7d-9788-7aec8ad5eec3" name="Changes" comment="Натянул на сайт новую html верстку">
       <change afterPath="$PROJECT_DIR$/.idea/inspectionProfiles/Project_Default.xml" afterDir="false" />
       <change afterPath="$PROJECT_DIR$/.idea/inspectionProfiles/profiles_settings.xml" afterDir="false" />
       <change afterPath="$PROJECT_DIR$/.idea/misc.xml" afterDir="false" />
       <change afterPath="$PROJECT_DIR$/.idea/modules.xml" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/.idea/vcs.xml" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/YP/Dockerfile" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/YP/docker-compose.yml" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/YP/requirements.txt" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/YP/service/static/css/advantages.css" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/YP/service/static/css/container.css" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/YP/service/static/css/first-screen.css" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/YP/service/static/css/footer.css" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/YP/service/static/css/header.css" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/YP/service/static/css/how-it-work.css" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/YP/service/static/css/how-parse.css" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/YP/service/static/css/index.css" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/YP/service/static/css/main.css" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/YP/service/static/css/parse-target.css" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/YP/service/static/css/services.css" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/YP/service/static/icons-tg.svg" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/YP/start_django.py" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/YP/templates/flatpages/lower_part.html" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/YP/templates/service/service.html" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/YP/templates/service/service_create.html" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/YP/templates/service/service_edit.html" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/YP/static/assets/parsing_tovarov.png" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/YP/templates/flatpages/about_us.html" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/YP/templates/flatpages/contacts.html" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/YP/YP/settings.py" beforeDir="false" afterPath="$PROJECT_DIR$/YP/YP/settings.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/YP/service/models.py" beforeDir="false" afterPath="$PROJECT_DIR$/YP/service/models.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/YP/service/urls.py" beforeDir="false" afterPath="$PROJECT_DIR$/YP/service/urls.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/YP/service/views.py" beforeDir="false" afterPath="$PROJECT_DIR$/YP/service/views.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/YP/static/css/main.css" beforeDir="false" afterPath="$PROJECT_DIR$/YP/__init__.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/YP/static/css/styles.css" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/YP/static/main.js" beforeDir="false" afterPath="$PROJECT_DIR$/YP/service/static/main.js" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/YP/service/forms.py" beforeDir="false" afterPath="$PROJECT_DIR$/YP/service/forms.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/YP/service/static/css/advantages.css" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/YP/service/static/css/container.css" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/YP/service/static/css/first-screen.css" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/YP/service/static/css/footer.css" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/YP/service/static/css/header.css" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/YP/service/static/css/how-it-work.css" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/YP/service/static/css/how-parse.css" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/YP/service/static/css/index.css" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/YP/service/static/css/main.css" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/YP/service/static/css/parse-target.css" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/YP/service/static/css/services.css" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/YP/service/static/icons-tg.svg" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/YP/service/static/main.js" beforeDir="false" />
       <change beforePath="$PROJECT_DIR$/YP/templates/flatpages/default.html" beforeDir="false" afterPath="$PROJECT_DIR$/YP/templates/flatpages/default.html" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/YP/templates/flatpages/footer.html" beforeDir="false" afterPath="$PROJECT_DIR$/YP/templates/flatpages/footer.html" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/YP/templates/flatpages/navbar.html" beforeDir="false" afterPath="$PROJECT_DIR$/YP/templates/flatpages/navbar.html" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/YP/templates/service/modal.html" beforeDir="false" afterPath="$PROJECT_DIR$/YP/templates/service/modal.html" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/YP/templates/service/parsing_konkurentov.html" beforeDir="false" afterPath="$PROJECT_DIR$/YP/templates/service/parsing_konkurentov.html" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/YP/templates/service/sbor_bazy_klientov.html" beforeDir="false" afterPath="$PROJECT_DIR$/YP/templates/service/sbor_bazy_klientov.html" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/YP/templates/service/service_list.html" beforeDir="false" afterPath="$PROJECT_DIR$/YP/robots.txt" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -51,8 +43,8 @@
   <component name="FileTemplateManagerImpl">
     <option name="RECENT_TEMPLATES">
       <list>
-        <option value="Python Script" />
         <option value="HTML File" />
+        <option value="Python Script" />
       </list>
     </option>
   </component>
@@ -68,28 +60,30 @@
     <option name="hideEmptyMiddlePackages" value="true" />
     <option name="showLibraryContents" value="true" />
   </component>
-  <component name="PropertiesComponent"><![CDATA[{
-  "keyToString": {
-    "DefaultHtmlFileTemplate": "HTML File",
-    "Python.views.executor": "Debug",
-    "RunOnceActivity.ShowReadmeOnStart": "true",
-    "git-widget-placeholder": "master",
-    "last_opened_file_path": "C:/Users/user/PycharmProjects/polezniemelochi.ru"
+  <component name="PropertiesComponent">{
+  &quot;keyToString&quot;: {
+    &quot;DefaultHtmlFileTemplate&quot;: &quot;HTML File&quot;,
+    &quot;Python.compress_image.executor&quot;: &quot;Run&quot;,
+    &quot;Python.views.executor&quot;: &quot;Debug&quot;,
+    &quot;RunOnceActivity.ShowReadmeOnStart&quot;: &quot;true&quot;,
+    &quot;git-widget-placeholder&quot;: &quot;master&quot;,
+    &quot;last_opened_file_path&quot;: &quot;C:/Users/user/PycharmProjects/your-parser.ru&quot;
   }
-}]]></component>
+}</component>
   <component name="RecentsManager">
     <key name="CopyFile.RECENT_KEYS">
-      <recent name="C:\Users\user\PycharmProjects\your-parser.ru\YP" />
+      <recent name="C:\Users\user\PycharmProjects\your-parser.ru\YP\static\assets" />
       <recent name="C:\Users\user\PycharmProjects\your-parser.ru\YP\static" />
+      <recent name="C:\Users\user\PycharmProjects\your-parser.ru\YP" />
       <recent name="C:\Users\user\PycharmProjects\your-parser.ru\YP\YP" />
       <recent name="C:\Users\user\PycharmProjects\your-parser.ru\YP\templates\users" />
     </key>
     <key name="MoveFile.RECENT_KEYS">
-      <recent name="C:\Users\user\PycharmProjects\your-parser.ru\YP\service" />
-      <recent name="C:\Users\user\PycharmProjects\your-parser.ru\YP\static" />
-      <recent name="C:\Users\user\PycharmProjects\your-parser.ru\YP\static\css" />
-      <recent name="C:\Users\user\PycharmProjects\your-parser.ru\YP\templates\service" />
       <recent name="C:\Users\user\PycharmProjects\your-parser.ru\YP" />
+      <recent name="C:\Users\user\PycharmProjects\your-parser.ru\YP\static\assets" />
+      <recent name="C:\Users\user\PycharmProjects\your-parser.ru" />
+      <recent name="C:\Users\user\PycharmProjects\your-parser.ru\YP\service\static\assets" />
+      <recent name="C:\Users\user\PycharmProjects\your-parser.ru\YP\service" />
     </key>
   </component>
   <component name="SharedIndexes">
@@ -132,8 +126,36 @@
       <option name="project" value="LOCAL" />
       <updated>1742748238112</updated>
     </task>
-    <option name="localTasksCounter" value="4" />
+    <task id="LOCAL-00004" summary="Натянул на сайт новую html верстку">
+      <option name="closed" value="true" />
+      <created>1742978518845</created>
+      <option name="number" value="00004" />
+      <option name="presentableId" value="LOCAL-00004" />
+      <option name="project" value="LOCAL" />
+      <updated>1742978518845</updated>
+    </task>
+    <task id="LOCAL-00005" summary="Натянул на сайт новую html верстку">
+      <option name="closed" value="true" />
+      <created>1743700928001</created>
+      <option name="number" value="00005" />
+      <option name="presentableId" value="LOCAL-00005" />
+      <option name="project" value="LOCAL" />
+      <updated>1743700928001</updated>
+    </task>
+    <task id="LOCAL-00006" summary="Натянул на сайт новую html верстку">
+      <option name="closed" value="true" />
+      <created>1743701052321</created>
+      <option name="number" value="00006" />
+      <option name="presentableId" value="LOCAL-00006" />
+      <option name="project" value="LOCAL" />
+      <updated>1743701052321</updated>
+    </task>
+    <option name="localTasksCounter" value="7" />
     <servers />
+  </component>
+  <component name="UnknownFeatures">
+    <option featureType="com.intellij.fileTypeFactory" implementationName="robots.txt" />
+    <option featureType="com.intellij.fileTypeFactory" implementationName="nginx.conf" />
   </component>
   <component name="Vcs.Log.Tabs.Properties">
     <option name="TAB_STATES">
@@ -149,19 +171,20 @@
   <component name="VcsManagerConfiguration">
     <MESSAGE value="Создал проект" />
     <MESSAGE value="Закончил работу над frontend частью модального окна заявки." />
-    <option name="LAST_COMMIT_MESSAGE" value="Закончил работу над frontend частью модального окна заявки." />
+    <MESSAGE value="Натянул на сайт новую html верстку" />
+    <option name="LAST_COMMIT_MESSAGE" value="Натянул на сайт новую html верстку" />
   </component>
   <component name="XDebuggerManager">
     <breakpoint-manager>
       <breakpoints>
         <line-breakpoint enabled="true" suspend="THREAD" type="python-line">
           <url>file://$PROJECT_DIR$/YP/service/views.py</url>
-          <line>31</line>
+          <line>34</line>
           <option name="timeStamp" value="4" />
         </line-breakpoint>
         <line-breakpoint enabled="true" suspend="THREAD" type="python-line">
           <url>file://$PROJECT_DIR$/YP/service/views.py</url>
-          <line>38</line>
+          <line>41</line>
           <option name="timeStamp" value="5" />
         </line-breakpoint>
       </breakpoints>

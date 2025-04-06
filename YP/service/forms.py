@@ -59,7 +59,7 @@ class OrderForm(forms.Form):
         strip=False,
         widget=forms.TextInput(
             attrs={
-                "autocomplete": "phone",
+                "autocomplete": "tel",
                 'class': 'form-control',
                 'placeholder': 'Ваши контактные данные',
             }),

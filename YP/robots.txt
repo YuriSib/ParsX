@@ -1,0 +1,8 @@
+User-agent: *
+Disallow: /admin/
+Disallow: /create_order/
+Disallow: /create_category/
+Disallow: /create_service/
+Allow: /
+
+Sitemap: https://parsx.ru/sitemap.xml

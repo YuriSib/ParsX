@@ -27,7 +27,8 @@ SECRET_KEY = 'django-insecure-tn!0kya#l3^y_2te02hbbuh$q)k6^7wa(3v0ab!!q&+u094i!_
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = ['parsx.ru', '37.252.17.82', 'localhost', '127.0.0.1', 'yp_postgres']
+ALLOWED_HOSTS = ['www.parsx.ru', 'parsx.ru', '37.252.17.82', 'localhost', '127.0.0.1', 'yp_postgres']
+CSRF_TRUSTED_ORIGINS = ['https://parsx.ru']
 
 
 # Application definition

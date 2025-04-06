@@ -1,8 +1,6 @@
 {% load static %}
 {% load tags %}
-
 <script src="https://kit.fontawesome.com/018b9a4921.js" crossorigin="anonymous"></script>
-
 <div class="container">
         <div class="header__wrapper">
           <div class="header__logo">
@@ -10,16 +8,15 @@
               <img class="header__logo-link-image" src="{% static 'assets/logo.png' %}" alt="logo" />
             </a>
           </div>
-
           <div class="header__menu">
             <div class="header__menu-wrapper">
               <nav class="header__nav">
                 <ul class="header__nav-menu">
                   <li class="header__nav-menu-item">
-                    <a class="header__nav-menu-item-link" href="#">Контакты</a>
+                    <a class="header__nav-menu-item-link" href="/contacts/">Контакты</a>
                   </li>
                   <li class="header__nav-menu-item">
-                    <a class="header__nav-menu-item-link" href="#">О нас</a>
+                    <a class="header__nav-menu-item-link" href="/about_us/">О нас</a>
                   </li>
                   <li class="header__nav-menu-item">
                     <a class="header__nav-menu-item-link" href="#">Услуги</a>
@@ -44,7 +41,6 @@
                   {% endif %}
                 </ul>
               </nav>
-
               <div class="header__contacts">
                 <div class="header__contacts-list">
                   <a class="header__contacts-list-link" href="mailto:info@parsx.ru">
@@ -52,7 +48,6 @@
                   </a>
                   <a class="header__contacts-list-link" href="tel:+79517684792"> +79517684792 </a>
                 </div>
-
                 <div class="header__contacts-social">
                   <a class="navbar-brand" href="https://web.telegram.org/k/#@YuriyMadeInRf" target="_blank">
                     <i class="fa fa-telegram" aria-hidden="true" style="font-size: 34px; color:#00a3fe"></i>
@@ -62,13 +57,11 @@
                   </a>
                 </div>
               </div>
-
               <div class="header__callback">
                 <button class="header__callback header__callback-button" type="button" data-bs-toggle="modal" data-bs-target="#login_ajax">Оставить заявку</button>
               </div>
             </div>
           </div>
-
           <div class="header__burger">
             <button class="header__burger-button"></button>
           </div>
