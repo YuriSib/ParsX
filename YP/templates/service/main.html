@@ -1,0 +1,141 @@
+{% extends 'flatpages/default.html' %}
+{% load static %}
+{% load tags %}
+{% block title %}Сервис парсинга: быстрый сбор данных{% endblock %}
+{% block description %}У нас лучшая система парсинга и автоматизация сбора обработки данных. Цены от 1000 рублей.
+Удобный формат результатов и быстрый отчет{% endblock %}
+{% block content %}
+<main class="main">
+      <section class="first-screen">
+        <div class="container">
+          <div class="first-screen__wrapper">
+            <div class="first-screen__content">
+              <h1 class="first-screen__title">Эффективный парсинг по доступным ценам</h1>
+              <p class="advantages__text">
+                Современный рынок быстротечен, под него необходимо подстраиваться и оперативно реагировать на все
+                изменения. Наш сервис парсинга позволит бизнесу автоматизировать сбор информации, анализировать
+                конкурентные предложения, мониторить цены и находить новые возможности. Это незаменимый инструмент
+                для маркетинга, аналитики и оптимизации бизнес-процессов.
+              </p>
+            </div>
+            <figure class="first-screen__figure">
+              <img
+                class="first-screen__figure-image"
+                src="{% static 'assets/first-screen-img.jpg' %}"
+                alt="first-screen"
+              />
+            </figure>
+          </div>
+        </div>
+      </section>
+      <section class="services">
+        <div class="container">
+          <div class="services__content">
+            <a class="services__card" href="/service/parsing_tovarov">
+              <div class="services__card-info">
+                <h2 class="services__card-info-title">Парсинг товаров</h2>
+                <p class="services__card-info-text">
+                  Быстро заполнить свои карточки товаров или собрать товарную матрицу конкурента.
+                </p>
+              </div>
+              <figure class="services__card-figure">
+                <img class="services__card-figure-image" src="{% static 'assets/pars_prod.png' %}" alt="PIC" />
+              </figure>
+            </a>
+            <a class="services__card" href="/service/sbor_bazy_klientov">
+              <div class="services__card-info">
+                <h2 class="services__card-info-title">Сбор базы компаний</h2>
+                <p class="services__card-info-text">
+                  Актуальные списки организаций. Подходит для рассылки и обзвона.
+                </p>
+              </div>
+              <figure class="services__card-figure">
+                <img class="services__card-figure-image" src="{% static 'assets/usluga_1.png' %}" alt="PIC" />
+              </figure>
+            </a>
+            <a class="services__card" href="/service/parsing_konkurentov">
+              <div class="services__card-info">
+                <h2 class="services__card-info-title">Парсинг конкурентов</h2>
+                <p class="services__card-info-text">
+                   Анализируем ассортимент, цены и отзывы конкурентов, чтобы вы всегда были на шаг впереди.
+                </p>
+              </div>
+              <figure class="services__card-figure">
+                <img class="services__card-figure-image" src="{% static 'assets/pars_rivals.png' %}" alt="PIC" />
+              </figure>
+            </a>
+            <a href="#" class="services__card" data-bs-toggle="modal" data-bs-target="#login_ajax" onclick="event.preventDefault();">
+              <div class="services__card-info">
+                <h2 class="services__card-info-title">Другие решения по сбору данных</h2>
+                <p class="services__card-info-text">
+                  Опишите вашу задачу, мы подберем решение под ваш бизнес. 
+                </p>
+              </div>
+              <figure class="services__card-figure">
+                <img class="services__card-figure-image" src="{% static 'assets/other.png' %}" alt="PIC" />
+              </figure>
+            </a>
+          </div>
+        </div>
+      </section>
+      <section class="advantages">
+        <div class="container">
+          <div class="advantages__wrapper">
+            <div class="advantages__content">
+              <h2 class="advantages__title">Почему стоит выбрать нас?</h2>
+
+              <p class="advantages__text">
+                Мы предлагаем услуги парсинга данных, которые включают несколько ключевых преимуществ:
+              </p>
+
+              <h3 class="advantages__subtitle">Структурированные данные</h3>
+              <p class="advantages__text">
+                Мы предоставляем отчеты в удобных для вас форматах.
+              </p>
+
+              <h3 class="advantages__subtitle">Персонализированные решения</h3>
+              <p class="advantages__text">Разрабатываем парсеры, учитывающие особенности задач каждого клиента.</p>
+              <h3 class="advantages__subtitle">Автоматизация обновлений</h3>
+              <p class="advantages__text">
+                Мы обеспечиваем автоматическую загрузку данных и их обновление в вашей системе.
+              </p>
+              <h3 class="advantages__subtitle">Использование технологий ИИ для улучшения данных</h3>
+              <p class="advantages__text">
+                Мы применяем нейросети для анализа, сравнения и фильтрации данных, что позволяет значительно
+                <strong>снизить затраты</strong> на выполнение задач.
+              </p>
+            </div>
+            <div class="advantages__banner">
+              <h4 class="advantages__banner-title">
+                Опишите вашу задачу, свяжемся с вами и предложим варианты исполнения
+              </h4>
+              <button class="advantages__banner-button" type="button" data-bs-toggle="modal" data-bs-target="#login_ajax">Ваша задача</button>
+            </div>
+          </div>
+        </div>
+      </section>
+      <section class="how-parse">
+        <div class="container">
+          <h2 class="how-parse__title">Что мы можем парсить?</h2>
+          <div class="how-parse__text">
+            Наша система парсинга предоставляет возможность собирать и структурировать данные с
+            различных ресурсов:
+          </div>
+          <ul class="how-parse__list">
+            <li class="how-parse__list-item">
+              Маркетплейсы: отслеживать цены, ассортимент и отзывы конкурентов.
+            </li>
+            <li class="how-parse__list-item">
+              Каталоги и базы компаний: собирать информацию о потенциальных партнерах и клиентах.
+            </li>
+            <li class="how-parse__list-item">
+              Доски объявлений: находить актуальные предложения и ценовые тенденции.
+            </li>
+            <li class="how-parse__list-item">
+              Любую другую информацию на сайтах в открытом доступе мы найдем и обработаем.
+            </li>
+          </ul>
+        </div>
+      </section>
+</main>
+{% endblock content %}
