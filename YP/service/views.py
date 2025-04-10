@@ -9,15 +9,6 @@ from .forms import OrderForm, CategoryForm, ServiceForm
 from YP.logger import logger
 
 
-class MainPage(ListView):
-    model = Category
-    ordering = 'name'
-    template_name = 'service/main.html'
-    context_object_name = 'categories'
-
-    success_url = reverse_lazy('')
-
-
 class OrderAjaxView(View):
     def post(self, request):
         customer_name = request.POST.get('customer_name')

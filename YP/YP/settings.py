@@ -45,6 +45,7 @@ INSTALLED_APPS = [
 
     'communication',
     'service',
+    'core',
     'content',
     # 'django.contrib.sites.models.Site',
     'users'
