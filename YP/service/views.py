@@ -32,7 +32,8 @@ class OrderAjaxView(View):
             )
             return JsonResponse(
                 data={
-                    'status': 201
+                    'status': 201,
+                    'message': 'Вы оставили заявку, вскоре с вами свяжутся!'
                 },
                 status=200
             )
