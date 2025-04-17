@@ -30,6 +30,8 @@ urlpatterns = [
     path('users/', include('users.urls')),
     path('pages/', include('django.contrib.flatpages.urls')),
 
+    path('tinymce/', include('tinymce.urls')),
+
 ]
 
 if settings.DEBUG:
