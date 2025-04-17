@@ -28,4 +28,8 @@ urlpatterns = [
         template_name="seo/sitemapxml.html",
         content_type="text/html"
     )),
+    path('thank-you', TemplateView.as_view(
+        template_name="service/thank-you.html",
+        content_type="text/html"
+    )),
    ]

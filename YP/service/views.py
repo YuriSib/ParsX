@@ -92,3 +92,7 @@ def sbor_bazy_klientov(request):
 
 def parsing_konkurentov(request):
     return render(request, 'service/parsing_konkurentov.html')
+
+
+def costs(request):
+    return render(request, 'service/cost.html')

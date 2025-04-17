@@ -10,6 +10,7 @@ urlpatterns = [
    path("create_service/", ServiceCreate.as_view(), name="create_service"),
    path('service/<int:pk>', ServiceDetail.as_view(), name='service_detail'),
 
+   path('ceny_na_parsing', views.costs, name='costs'),
    path('parsing_tovarov', views.parsing_tovarov, name='parsing_tovarov'),
    path('sbor_bazy_klientov', views.sbor_bazy_klientov, name='sbor_bazy_klientov'),
    path('parsing_konkurentov', views.parsing_konkurentov, name='parsing_konkurentov'),

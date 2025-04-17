@@ -27,7 +27,7 @@ $(function ($) {
             success: function (response) {
                 console.log('ok - ', response)
                 if (response.status === 201) {
-                    window.location.reload()
+                    window.location.href = '/thank-you';
                 } else if (response.status === 400) {
                     $('.alert-danger').text(response.error).removeClass('d-none')
                 }
