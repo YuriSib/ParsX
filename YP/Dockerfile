@@ -1,12 +1,12 @@
 FROM python:3.10
 
-SHELL ["/bin/bash", "-c"]
 
+# Настройки среды:
 ENV PYTHONDONTWRITEBYTECODE=1
 ENV PYTHONUNBUFFERED=1
 
 
-# определяю корневую директорию, куда упадет проект
+# Устанавливаем рабочую директорию внутри контейнера
 WORKDIR /YP
 
 # копирую файл с зависимостями
@@ -30,6 +30,6 @@ RUN mkdir -p /YP/static && mkdir -p /YP/media
 
 EXPOSE 8000
 
-CMD ["bash", "-c", "python manage.py migrate && pm2-runtime start start_django.py --interpreter python3 --name django-app"]
+CMD ["bash", "-c", "python manage.py makemigrations && python manage.py migrate && pm2-runtime start start_django.py --interpreter python3 --name django-app"]
 
 

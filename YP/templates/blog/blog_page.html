@@ -1,0 +1,18 @@
+{% extends 'flatpages/default.html' %}
+
+{% block title %}{{ page.title }}{% endblock %}
+{% block description %}{{ page.description }}{% endblock %}
+
+{% block content %}
+    <main class="main">
+        <section class="first-screen">
+            <div class="container">
+                <div class="first-screen__wrapper">
+                    <div class="first-screen__content">
+            {{ page.content|safe }}
+                    </div>
+                </div>
+            </div>
+        </section>
+    </main>
+{% endblock content %}

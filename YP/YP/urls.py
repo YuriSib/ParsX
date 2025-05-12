@@ -29,6 +29,7 @@ urlpatterns = [
     path('admin/', admin.site.urls),
     path('users/', include('users.urls')),
     path('pages/', include('django.contrib.flatpages.urls')),
+    path('blog/', include('content.urls')),
 
     path('tinymce/', include('tinymce.urls')),
 

@@ -13,7 +13,7 @@ class Category(models.Model):
 class Service(models.Model):
     """Непосредственно услуги"""
     name = models.CharField(max_length=255, unique=True)
-    description = models.TextField()
+    description = models.TextField(default='зНАЧЕНИЕ ПО УМОЛЧАНИЮ')
     category = models.ForeignKey(Category, on_delete=models.SET_NULL, null=True, blank=True)
 
     def __str__(self):

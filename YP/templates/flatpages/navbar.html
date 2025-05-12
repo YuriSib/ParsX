@@ -1,5 +1,5 @@
 {% load static %}
-{% load tags %}
+{% load my_tags %}
 <script src="https://kit.fontawesome.com/018b9a4921.js" crossorigin="anonymous"></script>
 <div class="container">
         <div class="header__wrapper">
@@ -37,8 +37,19 @@
                   </li>
                   {% if request.user.is_authenticated %}
                     {% if request.user.is_superuser %}
-                      <li class="nav-item text-nowrap">
-                        <a class="nav-link" href="{% url 'service:create_service' %}">Добавить услугу</a>
+                      <li class="header__nav-menu-item">
+                        <a class="nav-link" href="/admin">Админка</a>
+                      </li>
+                      <li class="header__nav-menu-item">
+                        <a class="header__nav-menu-item-link" href="#">Блог</a>
+                        <ul class="header__nav-submenu">
+                          {% get_articles as articles %}
+                            {% for article in articles %}
+                              <li class="header__nav-submenu-item">
+                                <a class="header__nav-submenu-item-link" href="/blog/{{ article.slug }}">{{ article.title }}</a>
+                              </li>
+                            {% endfor %}
+                        </ul>
                       </li>
                     {% endif %}
                   {% endif %}

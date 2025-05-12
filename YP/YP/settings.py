@@ -152,7 +152,7 @@ STATIC_URL = '/static/'
 STATICFILES_DIRS = [os.path.join(BASE_DIR, "static")]
 STATIC_ROOT = os.path.join(BASE_DIR, 'staticfiles')
 
-TINYMCE_JS_URL = os.path.join(BASE_DIR, "tinymce/js/tinymce/tinymce.min.js")
+TINYMCE_JS_URL = STATIC_URL + 'tinymce/js/tinymce/tinymce.min.js'
 TINYMCE_COMPRESSOR = False
 TINYMCE_DEFAULT_CONFIG = {
     "height": "320px",
