@@ -26,13 +26,13 @@ urlpatterns = [
     # path('content', include('content.urls')),
     path('service/', include('service.urls')),
     path('', include('core.urls')),
+    path('vk_login/', include('vk_sync.urls')),
+
     path('admin/', admin.site.urls),
     path('users/', include('users.urls')),
     path('pages/', include('django.contrib.flatpages.urls')),
     path('blog/', include('content.urls')),
-
-    path('tinymce/', include('tinymce.urls')),
-
+    path('accept_requests/', TemplateView.as_view(template_name='flatpages/accept_requests.html'), name='accept_requests'),
 ]
 
 if settings.DEBUG:

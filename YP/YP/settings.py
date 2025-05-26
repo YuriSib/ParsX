@@ -50,8 +50,8 @@ INSTALLED_APPS = [
     'core',
     'content',
     # 'django.contrib.sites.models.Site',
-    'users'
-
+    'users',
+    'vk_sync',
 ]
 
 
@@ -108,7 +108,7 @@ DATABASES = {
         'NAME': 'YP_DB',  # Название вашей базы данных
         'USER': 'postgres',  # Имя пользователя базы данных
         'PASSWORD': 'jQhdcM,s1@ULs?',  # Пароль для подключения
-        'HOST': 'yp_postgres',  # Это имя контейнера
+        'HOST': '37.252.17.82',  # Это имя контейнера
         'PORT': '5432',  # Порт, на котором слушает база данных
     }
 }

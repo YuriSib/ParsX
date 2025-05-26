@@ -1,0 +1,82 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>VK Login</title>
+</head>
+<body>
+  <h1>Добро пожаловать</h1>
+  <button onclick="startVkLogin()">Войти через VK ID</button>
+
+  <script>
+    function startVkLogin() {
+      fetch('/oauth/start/', { method: 'POST' })
+        .then(res => res.json())
+        .then(data => {
+          // Открыть в новой вкладке:
+          // window.open(data.auth_url, '_blank');
+
+          // Или в popup-окне:
+          window.open(data.auth_url, '_blank', 'width=500,height=600');
+        });
+    }
+  </script>
+</body>
+</html>
+<!--<!DOCTYPE html>-->
+<!--<html lang="en">-->
+<!--<head>-->
+<!--    <meta charset="UTF-8">-->
+<!--    <title>Title</title>-->
+<!--</head>-->
+<!--<body>-->
+<!--    <h1 class="title">VK ID</h1>-->
+<!--    <div class="auth-container" id="VKIDSDKAuthButton">-->
+<!--    </div>-->
+<!--    <div class="user-container">-->
+<!--        <div id="logoutButton"></div>-->
+<!--        <pre id="userInfo"></pre>-->
+<!--    </div>-->
+<!--      <script src="https://unpkg.com/@vkid/sdk@<3.0.0/dist-sdk/umd/index.js"></script>-->
+<!--      <script type="text/javascript">-->
+<!--        if ('VKIDSDK' in window) {-->
+<!--          const VKID = window.VKIDSDK;-->
+
+<!--          VKID.Config.init({-->
+<!--            app: 53476139,-->
+<!--            redirectUrl: 'https://parsx.ru/vk_login/accept_requests/',-->
+<!--            responseMode: VKID.ConfigResponseMode.Callback,-->
+<!--            source: VKID.ConfigSource.LOWCODE,-->
+<!--            scope: 'market', // Заполните нужными доступами по необходимости-->
+<!--          });-->
+
+<!--          const oneTap = new VKID.OneTap();-->
+
+<!--          oneTap.render({-->
+<!--            container: document.currentScript.parentElement,-->
+<!--            showAlternativeLogin: true,-->
+<!--            styles: {-->
+<!--              borderRadius: 40-->
+<!--            }-->
+<!--          })-->
+<!--          .on(VKID.WidgetEvents.ERROR, vkidOnError)-->
+<!--          .on(VKID.OneTapInternalEvents.LOGIN_SUCCESS, function (payload) {-->
+<!--            const code = payload.code;-->
+<!--            const deviceId = payload.device_id;-->
+
+<!--            VKID.Auth.exchangeCode(code, deviceId)-->
+<!--              .then(vkidOnSuccess)-->
+<!--              .catch(vkidOnError);-->
+<!--          });-->
+
+<!--          function vkidOnSuccess(data) {-->
+<!--            // Обработка полученного результата-->
+<!--          }-->
+
+<!--          function vkidOnError(error) {-->
+<!--            // Обработка ошибки-->
+<!--          }-->
+<!--        }-->
+<!--      </script>-->
+<!--    </div>-->
+<!--</body>-->
+<!--</html>-->
