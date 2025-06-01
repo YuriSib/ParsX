@@ -3,7 +3,9 @@ import base64
 import hashlib
 import string
 from urllib.parse import urlencode
+import requests
 
+from rest_framework import generics
 from django.http import JsonResponse
 from .models import Integrations
 from django.views import View
@@ -12,6 +14,8 @@ from django.shortcuts import render
 
 
 from YP.logger import logger
+from .models import Integrations, Products, Categories
+from .serializers import IntegrationsSerializer
 
 
 def generate_pkce_pair():
@@ -43,31 +47,73 @@ def start_vk_login(request):
     logger.info(f"Создал объект модели Integrations."
                 f"\nstate - {state}\ncode_verifier - {code_verifier}\ncode_challenge - {code_challenge}")
 
-    # params = {
-    #     'response_type': 'code',
-    #     'client_id': '53476139',
-    #     'code_challenge': code_challenge,
-    #     'code_challenge_method': 'S256',
-    #     'redirect_uri': "https://parsx.ru/accept_requests/",
-    #     'state': state,
-    #     'scope': 'market',
-    # }
-    url = f"https://id.vk.com/authorize?response_type=code&client_id=53476139&scope=market&redirect_uri=https%3A%2F%2Fparsx.ru%2Faccept_requests%2F&state={state}&code_challenge={code_challenge}&code_challenge_method=S256"
+    url = (f"https://id.vk.com/authorize?"
+           f"response_type=code&"
+           f"client_id=53476139&"
+           f"scope=market&"
+           f"redirect_uri=https%3A%2F%2Fparsx.ru%2Fvk_login%2Faccept_requests%2F&"
+           f"state={state}&"
+           f"code_challenge={code_challenge}&"
+           f"code_challenge_method=S256")
     return redirect(url)
 
 
 class VkAcceptCodeView(View):
+    @staticmethod
+    def get_access_token(code_verifier, code, device_id, state):
+        url = "https://id.vk.com/oauth2/auth"
+
+        headers = {
+            "Content-Type": "application/x-www-form-urlencoded"
+        }
+
+        data = {
+            "grant_type": "authorization_code",
+            "code_verifier": code_verifier,
+            "redirect_uri": "https://parsx.ru/vk_login/accept_requests/",
+            "code": code,
+            "client_id": "53476139",
+            "device_id": device_id,
+            "state": state
+        }
+
+        response = requests.post(url, headers=headers, data=data).json()
+        if response.get("error_description"):
+            logger.error(f"""Ошибка при попытке получить access_token. \n{response.get("error_description")}""")
+        else:
+            logger.debug(response)
+            return response.get("refresh_token"), response.get("access_token")
+
     def get(self, request):
         request_data = request.GET
         code = request_data.get("code")
         state = request_data.get("state")
         device_id = request_data.get("device_id")
 
+        "берем code_verifier для последнего появившегося объекта из БД"
+        last_object = Integrations.objects.get(state=state)
+        if last_object:
+            code_verifier = last_object.code_verifier
+        else:
+            logger.critical("The table is empty")
+            return None
+
+        "запрашиваем пару refresh_token и access_token"
+        refresh_token, access_token = self.get_access_token(
+            code_verifier=code_verifier,
+            code=code,
+            device_id=device_id,
+            state=state
+        )
+
+        "Add new data to DB"
         obj, created = Integrations.objects.update_or_create(
             state=state,
             defaults={
                 'device_id': device_id,
                 'authorization_code': code,
+                'refresh_token': refresh_token,
+                'access_token': access_token,
             }
         )
         logger.info(f'obj: {obj}\n created: {created}')
@@ -82,5 +128,6 @@ class VkAcceptCodeView(View):
         })
 
 
-"https://id.vk.com/authorize?response_type=code&client_id=12345&scope=email%20phone&redirect_uri=https%3A%2F%2Fyour.site&state=XXXRandomZZZ&code_challenge=K8KAyQ82WSEncryptedVerifierGYUDj8K&code_challenge_method=S256"
-"https://id.vk.com/authorize?client_id=53476139&redirect_uri=https%3A%2F%2Fparsx.ru%2Faccept_requests%2F&response_type=code&state=GSEh0_Wu0h9TF7bhNF65qbRVxSE89uoS&scope=market&code_challenge=Bnavf77XDKMn3hdSx7A_cD-VJu5aakU9MPlWwuJ9Qbs&code_challenge_method=S256"
+class IntegrationsListCreateAPIView(generics.ListCreateAPIView):
+    queryset = Integrations.objects.all()
+    serializer_class = IntegrationsSerializer

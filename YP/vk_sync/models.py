@@ -4,15 +4,15 @@ from django.contrib.postgres.fields import ArrayField
 
 class Integrations(models.Model):
     name = models.CharField(max_length=255, unique=False, null=True)
-    authorization_code = models.CharField(max_length=255, unique=False, null=True)
+    authorization_code = models.CharField(max_length=400, unique=False, null=True)
 
     code_challenge = models.CharField(max_length=130, unique=False, null=True)
     code_verifier = models.CharField(max_length=130, unique=False, null=True)
     state = models.CharField(max_length=130, unique=False, null=True)
     device_id = models.CharField(max_length=255, unique=False, null=True)
 
-    refresh_token = models.CharField(max_length=255, unique=False, null=True)
-    access_token = models.CharField(max_length=255, unique=False, null=True)
+    refresh_token = models.CharField(max_length=400, unique=False, null=True)
+    access_token = models.CharField(max_length=400, unique=False, null=True)
 
 
 class Categories(models.Model):
