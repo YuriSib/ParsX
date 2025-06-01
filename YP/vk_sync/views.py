@@ -5,9 +5,11 @@ import string
 from urllib.parse import urlencode
 import requests
 
-from rest_framework import generics
+from rest_framework.views import APIView
+from rest_framework.response import Response
+from rest_framework import status
+
 from django.http import JsonResponse
-from .models import Integrations
 from django.views import View
 from django.shortcuts import redirect
 from django.shortcuts import render
@@ -15,7 +17,7 @@ from django.shortcuts import render
 
 from YP.logger import logger
 from .models import Integrations, Products, Categories
-from .serializers import IntegrationsSerializer
+from .vk_sync import ProductIntegrations
 
 
 def generate_pkce_pair():
@@ -128,6 +130,20 @@ class VkAcceptCodeView(View):
         })
 
 
-class IntegrationsListCreateAPIView(generics.ListCreateAPIView):
-    queryset = Integrations.objects.all()
-    serializer_class = IntegrationsSerializer
+class CheckAuthorizationCodeAPIView(APIView):
+    def post(self, request):
+        code = request.data.get('authorization_code')
+        product_data = request.data.get('product_data')
+
+        if not code or not product_data:
+            return Response({"error": "Missing data"}, status=status.HTTP_400_BAD_REQUEST)
+
+        # 👉 здесь вызывается твоя логика
+        prod_vk_id = self.run_custom_logic(code, product_data)
+        return Response({"status": "OK", "prod_vk_id": prod_vk_id})
+
+    @staticmethod
+    def run_custom_logic(code, product_data):
+        integrations = ProductIntegrations
+        prod_vk_id = integrations.sync_one_prod(code, product_data)
+        return prod_vk_id
