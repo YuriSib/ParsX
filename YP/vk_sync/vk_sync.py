@@ -35,7 +35,7 @@ class ProductIntegrations:
         self.sbis_data = sbis_data
 
     @staticmethod
-    def get_tokens(refresh_token, device_id, state):
+    def get_access(refresh_token, device_id, state):
         "Для получения access_token"
         url = "https://id.vk.com/oauth2/auth"
         payload = {
@@ -52,11 +52,23 @@ class ProductIntegrations:
         }
 
         logger.debug(f'refresh_token, device_id, state : {refresh_token, device_id, state}')
-        response = requests.post(url, data=payload, headers=headers)
+        logger.debug('Post-запрос для обмена access_token')
+        logger.debug(f'url - {url}')
+        logger.debug(f'headers - {headers}')
+        logger.debug(f'data - {payload}')
+        response = requests.post(url, data=payload, headers=headers).json()
 
-        logger.debug("Status code:", response.status_code)
-        logger.debug("Response:", response.json())
-        return response.json()
+        logger.debug(f"Ответ - {response}")
+        try:
+            refresh_token = response.get('refresh_token')
+            access_token = response.get('access_token')
+            logger.debug(f"refresh_token - {refresh_token}\n access_token - {access_token}")
+
+            if refresh_token:
+                logger.debug("Завершаю функцию get_access, возвращаю refresh_token и access_token")
+                return refresh_token, access_token
+        except Exception as e:
+            logger.error(f'Ошибка при попытке получить ответ {e}')
 
     @staticmethod
     def get_url(access_token, one_photo=True):
@@ -188,14 +200,34 @@ class ProductIntegrations:
         tokens = Integrations.objects.get(authorization_code=auth_code)
 
         refresh_token, device_id, state = tokens.refresh_token, tokens.device_id, tokens.state
-        access_token = self.get_tokens(refresh_token, device_id, state)
+
+        token_data = self.get_access(refresh_token, device_id, state)
+        logger.debug(f"token_data - {token_data}")
+        if token_data:
+            logger.debug(f"Пытаюсь извлечь токены из token_data...")
+            try:
+                new_refresh_token, access_token = token_data
+            except Exception as E:
+                logger.error(f"Не удалось извлечь данные, ошибка {E}")
+            logger.debug(f"new_refresh_token -  {new_refresh_token}")
+            try:
+                tokens.refresh_token = new_refresh_token
+                tokens.access_token = access_token
+                tokens.save()
+            except Exception as E:
+                logger.error(f"Ошибка при обновлении токенов через djangoORM {E}")
+                return None
+        else:
+            logger.error('Не удалось получить Токены')
 
         "Скачиваем фото"
+        logger.debug(f"Запускаю логику добавления товара")
         pic_download(sbis_id, pic_urls)
-        directory = Path(f'media/products/')
-        main_photo_path = directory / f"{sbis_id}-1.jpg"
+        parent_dir = Path(__file__).resolve().parent
+        media_dir = parent_dir / "media" / "products"
+        main_photo_path = media_dir / f"{sbis_id}-1.jpg"
         if not main_photo_path.is_file():
-            logger.warning(f'изображения нет в каталоге, пропускаем итерацию с товаром {name}')
+            logger.warning(f'изображения нет в каталоге ({main_photo_path}), пропускаем итерацию с товаром {name}')
             return 'изображения нет в каталоге'
 
         url = self.get_url(access_token)

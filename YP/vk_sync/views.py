@@ -80,9 +80,14 @@ class VkAcceptCodeView(View):
         }
 
         response = requests.post(url, headers=headers, data=data).json()
+        logger.debug('Post-запрос для авторизации без SDK')
+        logger.debug(f'url - {url}')
+        logger.debug(f'headers - {headers}')
+        logger.debug(f'data - {data}')
         if response.get("error_description"):
             logger.error(f"""Ошибка при попытке получить access_token. \n{response.get("error_description")}""")
         else:
+            logger.debug('Ответ')
             logger.debug(response)
             return response.get("refresh_token"), response.get("access_token")
 
@@ -107,7 +112,6 @@ class VkAcceptCodeView(View):
             device_id=device_id,
             state=state
         )
-
         "Add new data to DB"
         obj, created = Integrations.objects.update_or_create(
             state=state,
@@ -118,7 +122,6 @@ class VkAcceptCodeView(View):
                 'access_token': access_token,
             }
         )
-        logger.info(f'obj: {obj}\n created: {created}')
 
         # Обработка отсутствующих параметров
         if not code:
@@ -132,18 +135,27 @@ class VkAcceptCodeView(View):
 
 class CheckAuthorizationCodeAPIView(APIView):
     def post(self, request):
-        code = request.data.get('authorization_code')
+        # code = request.data.get('authorization_code')
+        last_obj = Integrations.objects.latest('id')
+        code = last_obj.authorization_code
+
         product_data = request.data.get('product_data')
+        logger.debug(f"code - {code} product_data - {product_data}")
 
         if not code or not product_data:
             return Response({"error": "Missing data"}, status=status.HTTP_400_BAD_REQUEST)
 
         # 👉 здесь вызывается твоя логика
-        prod_vk_id = self.run_custom_logic(code, product_data)
-        return Response({"status": "OK", "prod_vk_id": prod_vk_id})
+        try:
+            prod_vk_id = self.run_custom_logic(code, product_data)
+        except Exception as e:
+            logger.error(f"Ошибка синхронизации - {e}")
+        else:
+            return Response({"status": "OK", "prod_vk_id": prod_vk_id})
 
     @staticmethod
     def run_custom_logic(code, product_data):
-        integrations = ProductIntegrations
+        integrations = ProductIntegrations()
         prod_vk_id = integrations.sync_one_prod(code, product_data)
+        logger.info(f"prod_vk_id - {prod_vk_id}")
         return prod_vk_id
