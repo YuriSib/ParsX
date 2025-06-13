@@ -17,16 +17,16 @@ class Integrations(models.Model):
 
 class Categories(models.Model):
     name = models.CharField(max_length=255, unique=True, null=True)
-    parent_id = models.IntegerField()
+    parent_id = models.IntegerField(unique=False, null=True)
     vk_id = models.IntegerField(unique=True)
     vk_parent_id = models.IntegerField()
 
 
 class Products(models.Model):
     sbis_id = models.CharField(max_length=20, unique=True, null=False)
-    vk_id = models.IntegerField(unique=True)
-    category_id = models.ForeignKey(Categories, on_delete=models.SET_NULL, null=True)
-    product_name = models.CharField(max_length=255, unique=True, null=True)
+    vk_id = models.IntegerField(unique=True, null=True)
+    category = models.ForeignKey(Categories, on_delete=models.SET_NULL, null=True)
+    name = models.CharField(max_length=255, unique=True, null=True)
     description = models.TextField()
     parameters = models.JSONField()
     images = ArrayField(

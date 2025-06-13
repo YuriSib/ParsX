@@ -167,6 +167,7 @@ class VkUpdaterAPIView(APIView):
     def post(self, request):
         # Синхронизируем СБИС и ВК-маркет
         customer_id = request.data.get('customer_id')
+        logger.debug(f"customer_id - {customer_id}")
 
         """В этом месте необходимо реализовать логику, которая возьмет 
         customer_id и authorization_code и проверит, есть ли такая пара в БД"""
@@ -179,8 +180,14 @@ class VkUpdaterAPIView(APIView):
             products = self.get_vk_products()
         except Exception as e:
             logger.error(f"Ошибка получения товаров из ВК - {e}")
-        else:
-            return Response({"status": "OK", "prod_vk_id": products})
+            return Response({"status": "ERROR", "error_desc": f"Ошибка получения товаров из ВК - {e}"})
+
+        try:
+            self.vk_updater(customer_id)
+        except Exception as e:
+            logger.error(f"Ошибка обновления товаров ВК - {e}")
+            return Response({"status": "ERROR", "error_desc": f"Ошибка получения товаров из ВК - {e}"})
+        return Response({"status": "OK", "prod_vk_id": products})
 
     @staticmethod
     def get_vk_products():
@@ -195,8 +202,8 @@ class VkUpdaterAPIView(APIView):
         return products
 
     @staticmethod
-    def vk_updater(customer_id, vk_products):
-        # Получаем список товаров, принадлежащих пользователю
+    def vk_updater(customer_id):
+        logger.debug('Получаем список товаров, принадлежащих пользователю')
         db_products = Products.objects.filter(customer=customer_id)
 
         sync = ProductIntegrations()
@@ -205,12 +212,15 @@ class VkUpdaterAPIView(APIView):
 
         logger.debug("получаем access_token")
         access_token = sync.auth(code)
+        logger.debug(f'access_token - {access_token}')
         if not access_token:
             logger.error("Не удалось получить access_token")
             return None
 
+        logger.debug(f'Пытаюсь вывести db_products...')
+        logger.debug(db_products)
         for product in db_products:
-            "Формируем product_info"
+            logger.debug("Формируем product_info")
             """('vk_id', 'sbis_id', 'site_link', 'pic_urls', 'name', 'description', 'price', 'old_price', 'url')"""
             product_info = {
                 'sbis_id': product.sbis_id,
@@ -221,13 +231,16 @@ class VkUpdaterAPIView(APIView):
                 'old_price': product.old_price,
                 'site_link': product.unisiter_url,
             }
+            logger.debug(f"product_info - {product_info}")
             if product.vk_id: #Если товар есть в ВК маркет, обновляем его значения
+                logger.debug(f"{product.name} уже есть в ВК-маркет, обновляю его")
                 product_info['vk_id'] = product.vk_id
                 result = sync.update_product(access_token, product_info)
                 logger.debug(f"Результат обновления - {result}")
                 if result == {"response": 1}:
                     logger.debug(f'Обновление {product.name} прошло успешно!')
             else: #Если такого товара нет, добавляем его
+                logger.debug(f"{product.name} нет в ВК-маркет, добавляю его")
                 category = product.objects.select_related('category_id').get(sbis_id=product.sbis_id)
                 vk_category_id = category.category_id.vk_id
                 product_info["vk_category_id"] = vk_category_id

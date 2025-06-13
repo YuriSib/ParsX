@@ -5,8 +5,9 @@ import aiohttp
 import asyncio
 from pathlib import Path
 
-from .models import Products
+from bulk_update_or_create import BulkUpdateOrCreateQuerySet
 
+from .models import Products, Categories, Integrations
 from YP.logger import logger
 from .get_from_unisiter import get_product_link
 from .utilits import strip_tags
@@ -37,6 +38,7 @@ def pic_download(sbis_id, pic_urls):
 
 
 def get_products(price, point_id):
+    logger.debug(f"Пытаюсь получить товары от СБИС")
     page = 0
     nomenclatures = []
     while True:
@@ -59,22 +61,18 @@ def get_products(price, point_id):
             # logger.warning('Работа фунцкии прекращена досрочно')
             # return nomenclatures
         else:
+            logger.debug(f"Получено {len(nomenclatures)} товаров")
             return nomenclatures
 
 
 def get_item_list(point_id=None):
     "Получает список товаров и категорий СБИС"
-    prices_list = [SBIS_PRICE_ID]
+    prices_list = SBIS_PRICE_ID
 
-    responses = []
-    for price in prices_list:
-        if point_id:
-            response = get_products(price, point_id)
-            responses.append(response)
+    response = get_products(SBIS_PRICE_ID, point_id)
 
     nomenclatures = []
-    for response in responses:
-        nomenclatures.extend(response)
+    nomenclatures.extend(response)
 
     category_list, product_list = [], []
     for product in nomenclatures:
@@ -96,24 +94,47 @@ def get_item_list(point_id=None):
 
 def catalog_sync(customer_id):
     "Синхронизирует товары СБИС и БД"
-    category_list, product_list = get_item_list()
+    logger.debug(f"Начинаю Синхронизирует товары СБИС и БД")
+    category_list, product_list = get_item_list(334198)
+    logger.debug(f"Извлечено {len(product_list)} товаров из {len(category_list)} категорий")
+
+    customer_instance = Integrations.objects.get(id=customer_id)
+    product_objects = []
     for product in product_list:
+        logger.debug(f"Обрабатываю {product['name']}")
         parameters = json.dumps(product['parameters'])
 
         description = strip_tags(product['description']) if product['description'] else ''
         unisiter_url = get_product_link(product['name'])
 
-        try:
-            Products.objects.update_or_create(
-                sbis_id=product['sbis_id'],
-                defaults={
-                    'customer_id': customer_id, 'name': product['name'], 'description': description,
-                    'parameters': parameters, 'price': product['price'], 'images': product['images'],
-                    'category_id': product['category'], 'stocks': product['stocks'], 'unisiter_url': unisiter_url
-                }
-            )
-        except Exception as e:
-            logger.error(f'Ошибка {e}')
+        logger.debug(f"product['category'] - {product['category']}")
+        category_instance = Categories.objects.get(id=product['category'])
+
+        product_obj = Products(
+            customer=customer_instance,
+            name=product['name'],
+            description=description,
+            parameters=parameters,
+            price=product['price'],
+            images=product['images'],
+            category=category_instance,
+            stocks_mol=product['stocks'],
+            unisiter_url=unisiter_url,
+            sbis_id=product['sbis_id'],
+        )
+        product_objects.append(product_obj)
+
+    try:
+        Products.objects.bulk_update_or_create(
+            product_objects,
+            unique_fields=['sbis_id'],
+            update_fields=[
+                'name', 'description', 'parameters', 'price', 'images',
+                'category', 'stocks_mol', 'unisiter_url', 'vk_id', 'customer'
+            ]
+)
+    except Exception as e:
+        logger.error(f'Ошибка {e}')
 
 
 # if __name__ == "__main__":

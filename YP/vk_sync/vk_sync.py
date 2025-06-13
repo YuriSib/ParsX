@@ -54,27 +54,17 @@ class ProductIntegrations:
             "Content-Type": "application/x-www-form-urlencoded"
         }
 
-        logger.debug(f'refresh_token, device_id, state : {refresh_token, device_id, state}')
-        logger.debug('Post-запрос для обмена access_token')
-        logger.debug(f'url - {url}')
-        logger.debug(f'headers - {headers}')
-        logger.debug(f'data - {payload}')
         response = requests.post(url, data=payload, headers=headers).json()
-
-        logger.debug(f"Ответ - {response}")
         try:
             refresh_token = response.get('refresh_token')
             access_token = response.get('access_token')
-            logger.debug(f"refresh_token - {refresh_token}\n access_token - {access_token}")
 
             if refresh_token:
-                logger.debug("Завершаю функцию get_access, возвращаю refresh_token и access_token")
                 return refresh_token, access_token
         except Exception as e:
             logger.error(f'Ошибка при попытке получить ответ {e}')
 
     def auth(self, auth_code):
-        logger.debug('Получаю новый токен')
         tokens = Integrations.objects.get(authorization_code=auth_code)
 
         refresh_token, device_id, state = tokens.refresh_token, tokens.device_id, tokens.state
@@ -201,7 +191,7 @@ class ProductIntegrations:
         access_token = self.auth(auth_code)
         if not access_token:
             logger.error("Не удалось получить access_token")
-            return None
+            return Nonew
 
         data = {
             'owner_id': -VK_owner_id,
