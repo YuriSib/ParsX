@@ -30,9 +30,12 @@ def pic_download(sbis_id, pic_urls):
                 file.write(response.content)
                 cnt_img += 1
 
+
 class ProductIntegrations:
     def __init__(self, sbis_data=None):
         self.sbis_data = sbis_data
+        parent_dir = Path(__file__).resolve().parent
+        self.media_dir = parent_dir / "media" / "products"
 
     @staticmethod
     def get_access(refresh_token, device_id, state):
@@ -69,6 +72,29 @@ class ProductIntegrations:
                 return refresh_token, access_token
         except Exception as e:
             logger.error(f'Ошибка при попытке получить ответ {e}')
+
+    def auth(self, auth_code):
+        logger.debug('Получаю новый токен')
+        tokens = Integrations.objects.get(authorization_code=auth_code)
+
+        refresh_token, device_id, state = tokens.refresh_token, tokens.device_id, tokens.state
+
+        token_data = self.get_access(refresh_token, device_id, state)
+        if token_data:
+            try:
+                new_refresh_token, access_token = token_data
+            except Exception as E:
+                logger.error(f"Не удалось извлечь данные, ошибка {E}")
+            else:
+                try:
+                    tokens.refresh_token = new_refresh_token
+                    tokens.access_token = access_token
+                    tokens.save()
+                    return access_token
+                except Exception as E:
+                    logger.error(f"Ошибка при обновлении токенов через djangoORM {E}")
+        else:
+            logger.error('Не удалось получить Токены')
 
     @staticmethod
     def get_url(access_token, one_photo=True):
@@ -133,8 +159,10 @@ class ProductIntegrations:
         return response['response'].get('photo_id')
 
     @staticmethod
-    def add_product(category_id, main_photo_id, name, desc, site_link, price, access_token):
+    def add_product(category_id, main_photo_id, name, desc, site_link, price, old_price, access_token):
         price = str(price)
+        """Передалать метод таким образом, чтобы параметры запроса добавлялись в словарь в зависимости от наличия.
+        Например, если old_price не будет передан, возникнет ошибка."""
         data = {
             'owner_id': -VK_owner_id,
             'name': name,
@@ -156,7 +184,25 @@ class ProductIntegrations:
             return response['response']['market_item_id']
 
     @staticmethod
-    def get_products(access_token):
+    def product_delete(prod_id, access_token):
+        data = {
+            'owner_id': -VK_owner_id,
+            'access_token': access_token,
+            'item_id': prod_id,
+            'v': '5.199',
+        }
+
+        response = requests.post('https://api.vk.com/method/market.delete', data=data).json()
+        if response.get('error'):
+            logger.error(f'''Ошибка в ответ на запрос - {response['error']['error_msg']}''')
+
+    def get_products(self, auth_code):
+        # получаем access_token
+        access_token = self.auth(auth_code)
+        if not access_token:
+            logger.error("Не удалось получить access_token")
+            return None
+
         data = {
             'owner_id': -VK_owner_id,
             'access_token': access_token,
@@ -173,18 +219,90 @@ class ProductIntegrations:
 
         return response['response']['items']
 
-    @staticmethod
-    def product_delete(prod_id, access_token):
+    def add_prod(self, access_token, product_info):
+        """
+        Метод для добавления нового товара
+        :param access_token:
+        :param product_info:
+        :return:
+        """
+        sbis_id = product_info['sbis_id']
+        pic_urls = product_info['pic_urls']
+        vk_category_id = product_info['vk_category_id']
+        name = product_info['name']
+        desc = product_info['description']
+        site_link = product_info['url']
+        price = product_info['price']
+        old_price = product_info['old_price']
+
+        "Скачиваем фото"
+        logger.debug(f"Запускаю логику добавления товара")
+        pic_download(sbis_id, pic_urls)
+        main_photo_path = self.media_dir / f"{sbis_id}-1.jpg"
+        if not main_photo_path.is_file():
+            logger.warning(f'изображения нет в каталоге ({main_photo_path}), пропускаем итерацию с товаром {name}')
+            return 'изображения нет в каталоге'
+
+        url = self.get_url(access_token)
+        product_data = self.download_photo(url, photo_path=str(main_photo_path))
+        photo_id = self.get_photo_id(product_data, access_token=access_token)
+        prod_vk_id = self.add_product(vk_category_id, photo_id, name=name, desc=desc, site_link=site_link,
+                                      price=price, old_price=old_price, access_token=access_token)
+
+        # product = Products.objects.update(sbis_id=sbis_id, )
+        return prod_vk_id
+
+    def update_product(self, access_token: str, product_info: dict):
+        """
+        Обновляет данные товара.
+        :param access_token: используется для получения access_token
+        :param product_info: ('vk_id', 'sbis_id', 'site_link', 'pic_urls', 'name', 'description', 'price', 'old_price', 'url')
+        Формирует параметры запроса. Имеет обязательные параметры - owner_id, item_id. Остальные
+        добавятся в словарь параметров, если существуют.
+        :return: {"response": 1}
+        """
+
+        sbis_id, vk_id = product_info['sbis_id'], product_info['vk_id']
+
+        optional_params = ['name', 'description', 'category_id', 'price', 'old_price', 'url']
+
+        logger.debug(f"Запускаю логику добавления товара")
+
+        logger.debug("Формируем параметры запроса")
+        # Обязательные значения
         data = {
             'owner_id': -VK_owner_id,
-            'access_token': access_token,
-            'item_id': prod_id,
+            'item_id': vk_id,
             'v': '5.199',
         }
+        "Скачиваем фото"
+        pic_urls = product_info.get('pic_urls')
+        if pic_urls:
+            pic_download(sbis_id, pic_urls)
+            main_photo_path = self.media_dir / f"{sbis_id}-1.jpg"
+            if not main_photo_path.is_file():
+                logger.warning(f'изображения нет в каталоге ({main_photo_path}), пропускаем итерацию с товаром {sbis_id}')
+            logger.debug("Добавляю фото товара")
+            url = self.get_url(access_token)
+            product_data = self.download_photo(url, photo_path=str(main_photo_path))
+            photo_id = self.get_photo_id(product_data, access_token=access_token)
+            logger.debug(f'photo_id - {photo_id}')
 
-        response = requests.post('https://api.vk.com/method/market.delete', data=data).json()
-        if response.get('error'):
-            logger.error(f'''Ошибка в ответ на запрос - {response['error']['error_msg']}''')
+            if photo_id:
+                data['main_photo_id'] = photo_id
+
+        # Перебираем все варианты необязательных параметров, смотрим есть ли они среди переданных параметров
+        for param in optional_params:
+            item_param = product_info.get(param)
+            if item_param:
+                data[param] = item_param
+        logger.debug(f"Сформировал параметры запроса - {data}")
+
+        response = requests.post('https://api.vk.com/method/market.edit', data=data).json()
+        logger.info(response)
+        time.sleep(1)
+        if response.get('response'):
+            return response['response']['market_item_id']
 
     def sync_one_prod(self, auth_code, product_data):
         sbis_id = product_data['sbis_id']
@@ -195,37 +313,16 @@ class ProductIntegrations:
         site_link = product_data['site_link']
         price = product_data['price']
 
-        "Загружаем товар в ВК"
-        logger.debug('Получаю новый токен')
-        tokens = Integrations.objects.get(authorization_code=auth_code)
-
-        refresh_token, device_id, state = tokens.refresh_token, tokens.device_id, tokens.state
-
-        token_data = self.get_access(refresh_token, device_id, state)
-        logger.debug(f"token_data - {token_data}")
-        if token_data:
-            logger.debug(f"Пытаюсь извлечь токены из token_data...")
-            try:
-                new_refresh_token, access_token = token_data
-            except Exception as E:
-                logger.error(f"Не удалось извлечь данные, ошибка {E}")
-            logger.debug(f"new_refresh_token -  {new_refresh_token}")
-            try:
-                tokens.refresh_token = new_refresh_token
-                tokens.access_token = access_token
-                tokens.save()
-            except Exception as E:
-                logger.error(f"Ошибка при обновлении токенов через djangoORM {E}")
-                return None
-        else:
-            logger.error('Не удалось получить Токены')
+        "получаем access_token"
+        access_token = self._auth(auth_code)
+        if not access_token:
+            logger.error("Не удалось получить access_token")
+            return None
 
         "Скачиваем фото"
         logger.debug(f"Запускаю логику добавления товара")
         pic_download(sbis_id, pic_urls)
-        parent_dir = Path(__file__).resolve().parent
-        media_dir = parent_dir / "media" / "products"
-        main_photo_path = media_dir / f"{sbis_id}-1.jpg"
+        main_photo_path = self.media_dir / f"{sbis_id}-1.jpg"
         if not main_photo_path.is_file():
             logger.warning(f'изображения нет в каталоге ({main_photo_path}), пропускаем итерацию с товаром {name}')
             return 'изображения нет в каталоге'

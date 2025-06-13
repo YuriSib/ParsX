@@ -18,6 +18,7 @@ from django.shortcuts import render
 from YP.logger import logger
 from .models import Integrations, Products, Categories
 from .vk_sync import ProductIntegrations
+from .get_from_sbis import catalog_sync
 
 
 def generate_pkce_pair():
@@ -136,6 +137,7 @@ class VkAcceptCodeView(View):
 class CheckAuthorizationCodeAPIView(APIView):
     def post(self, request):
         # code = request.data.get('authorization_code')
+        logger.warning('Используется ненадежный способ получения кода (по последнему созданному объекту)')
         last_obj = Integrations.objects.latest('id')
         code = last_obj.authorization_code
 
@@ -159,3 +161,78 @@ class CheckAuthorizationCodeAPIView(APIView):
         prod_vk_id = integrations.sync_one_prod(code, product_data)
         logger.info(f"prod_vk_id - {prod_vk_id}")
         return prod_vk_id
+
+
+class VkUpdaterAPIView(APIView):
+    def post(self, request):
+        # Синхронизируем СБИС и ВК-маркет
+        customer_id = request.data.get('customer_id')
+
+        """В этом месте необходимо реализовать логику, которая возьмет 
+        customer_id и authorization_code и проверит, есть ли такая пара в БД"""
+        # check_customer_id(customer_id, authorization_code)
+
+        catalog_sync(customer_id)
+
+        # 👉 здесь вызывается твоя логика
+        try:
+            products = self.get_vk_products()
+        except Exception as e:
+            logger.error(f"Ошибка получения товаров из ВК - {e}")
+        else:
+            return Response({"status": "OK", "prod_vk_id": products})
+
+    @staticmethod
+    def get_vk_products():
+        ""
+        logger.warning('Используется ненадежный способ получения кода (по последнему созданному объекту)')
+        last_obj = Integrations.objects.latest('id')
+        code = last_obj.authorization_code
+
+        PI = ProductIntegrations()
+        products = PI.get_products(auth_code=code)
+
+        return products
+
+    @staticmethod
+    def vk_updater(customer_id, vk_products):
+        # Получаем список товаров, принадлежащих пользователю
+        db_products = Products.objects.filter(customer=customer_id)
+
+        sync = ProductIntegrations()
+        last_obj = Integrations.objects.latest('id')
+        code = last_obj.authorization_code
+
+        logger.debug("получаем access_token")
+        access_token = sync.auth(code)
+        if not access_token:
+            logger.error("Не удалось получить access_token")
+            return None
+
+        for product in db_products:
+            "Формируем product_info"
+            """('vk_id', 'sbis_id', 'site_link', 'pic_urls', 'name', 'description', 'price', 'old_price', 'url')"""
+            product_info = {
+                'sbis_id': product.sbis_id,
+                'name': product.name,
+                'description': product.description,
+                'pic_urls': product.images,
+                'price': product.price,
+                'old_price': product.old_price,
+                'site_link': product.unisiter_url,
+            }
+            if product.vk_id: #Если товар есть в ВК маркет, обновляем его значения
+                product_info['vk_id'] = product.vk_id
+                result = sync.update_product(access_token, product_info)
+                logger.debug(f"Результат обновления - {result}")
+                if result == {"response": 1}:
+                    logger.debug(f'Обновление {product.name} прошло успешно!')
+            else: #Если такого товара нет, добавляем его
+                category = product.objects.select_related('category_id').get(sbis_id=product.sbis_id)
+                vk_category_id = category.category_id.vk_id
+                product_info["vk_category_id"] = vk_category_id
+
+                prod_vk_id = sync.add_prod(access_token, product_info)
+                logger.debug('добавляем в товар значение для поля vk_id')
+                product.update(vk_id=prod_vk_id)
+

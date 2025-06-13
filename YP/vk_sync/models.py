@@ -26,7 +26,7 @@ class Products(models.Model):
     sbis_id = models.CharField(max_length=20, unique=True, null=False)
     vk_id = models.IntegerField(unique=True)
     category_id = models.ForeignKey(Categories, on_delete=models.SET_NULL, null=True)
-    name = models.CharField(max_length=255, unique=True, null=True)
+    product_name = models.CharField(max_length=255, unique=True, null=True)
     description = models.TextField()
     parameters = models.JSONField()
     images = ArrayField(
@@ -35,6 +35,8 @@ class Products(models.Model):
         default=list
     )
     price = models.IntegerField()
+    old_price = models.IntegerField(null=True, blank=True)
     stocks_mol = models.IntegerField()
     unisiter_url = models.TextField()
+    customer = models.ForeignKey(Integrations, on_delete=models.SET_NULL, null=True)
 
