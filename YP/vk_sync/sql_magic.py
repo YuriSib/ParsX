@@ -24,11 +24,13 @@ VK_SYNC_DB = {
 DB_NAME, DB_USERNAME, DB_PASSWORD, HOST, PORT = (
     VK_SYNC_DB['DB_NAME'], VK_SYNC_DB['DB_USERNAME'], VK_SYNC_DB['DB_PASSWORD'], VK_SYNC_DB['HOST'], VK_SYNC_DB['PORT'])
 
+PX_DB_NAME, PX_DB_USERNAME, PX_DB_PASSWORD, PX_HOST, PX_PORT = (
+    PARSX_DB['DB_NAME'], PARSX_DB['DB_USERNAME'], PARSX_DB['DB_PASSWORD'], PARSX_DB['HOST'], PARSX_DB['PORT'])
+
 class PgSqlModel:
     def __init__(self, table):
         """
         Инициализация объекта для работы с PgSql.
-        Добавление тригеров.
         """
         self.table = table
         self.conn = psycopg.connect(
@@ -176,6 +178,39 @@ class PgSqlModel:
                 return None
 
             return product_data, vk_category_id
+
+
+def upsert_products(products: list[dict]):
+    """
+    Обновляет или вставляет товары по полю `sbis_id`.
+
+    :param products: список словарей с полями: name, description, parameters, price, sbis_id
+    """
+    conn = psycopg.connect(
+        f"dbname={PX_DB_NAME} user={PX_DB_USERNAME} password={PX_DB_PASSWORD} host={PX_HOST} port={PX_PORT}")
+    logger.debug("Соединение установлено.")
+
+    query = """
+    INSERT INTO vk_sync_products (sbis_id, customer_id, name, description, parameters, price, images, category_id, stocks_mol, unisiter_url)
+    VALUES (%(sbis_id)s, %(customer_id)s, %(name)s, %(description)s, %(parameters)s, %(price)s, %(images)s, %(category_id)s, %(stocks_mol)s, %(unisiter_url)s)
+    ON CONFLICT (sbis_id)
+    DO UPDATE SET
+        customer_id = EXCLUDED.customer_id,
+        name = EXCLUDED.name,
+        description = EXCLUDED.description,
+        parameters = EXCLUDED.parameters,
+        price = EXCLUDED.price,
+        images = EXCLUDED.images,
+        category_id = EXCLUDED.category_id,
+        stocks_mol = EXCLUDED.stocks_mol,
+        unisiter_url = EXCLUDED.unisiter_url;
+    """
+
+    with conn.cursor() as cur:
+        cur.executemany(query, products)
+
+    conn.commit()
+    conn.close()
 
 
 if __name__ == "__main__":

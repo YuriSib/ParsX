@@ -162,6 +162,7 @@ class ProductIntegrations:
             'access_token': access_token,
             'v': '5.199',
             'price': price,
+            'old_price': old_price
         }
 
         if site_link:
@@ -191,7 +192,7 @@ class ProductIntegrations:
         access_token = self.auth(auth_code)
         if not access_token:
             logger.error("Не удалось получить access_token")
-            return Nonew
+            return None
 
         data = {
             'owner_id': -VK_owner_id,
@@ -302,9 +303,10 @@ class ProductIntegrations:
         desc = product_data['desc']
         site_link = product_data['site_link']
         price = product_data['price']
+        old_price = product_data['old_price']
 
         "получаем access_token"
-        access_token = self._auth(auth_code)
+        access_token = self.auth(auth_code)
         if not access_token:
             logger.error("Не удалось получить access_token")
             return None
@@ -323,3 +325,9 @@ class ProductIntegrations:
         prod_vk_id = self.add_product(vk_category_id, photo_id, name=name, desc=desc, site_link=site_link,
                                       price=price, access_token=access_token)
         return prod_vk_id
+
+
+if __name__ == "__main__":
+    PI = ProductIntegrations()
+    products = PI.get_products('vk2.a.Y0dg84LxL98P7yf44x0V1Z5BdtMYsUbKZzGiMDosA0h_t-a-bXp4gyF4LNkXVtlPpX3255dfjFE0Yl4IiaYKqgPpI0ck8ygSBEluOBatHnCLqvPs9MW8tmfwwZ1cIXpaUucwgvZ5_1xfTXuFtQMgzjmbGPMRH8AO6XzPuVd9Dkz_xLlfY_FxRlqzh2WgiDLrNtLbDUNk21r2OvEv7BKo8jrAQZ443waT5SGDuwEvCac')
+    print(products)

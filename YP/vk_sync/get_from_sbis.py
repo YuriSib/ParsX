@@ -11,6 +11,7 @@ from .models import Products, Categories, Integrations
 from YP.logger import logger
 from .get_from_unisiter import get_product_link
 from .utilits import strip_tags
+from .sql_magic import upsert_products
 
 
 SBIS_TOKEN = "rbbew4LZMbof6GNJEWy0ZAz8jRhS3qQRaMLuiWQbcNHUyfj2WCpOswpo86FJyKoEKIT2Rqmmzufc3YHMdp8ZggucdnWRQTvQ56fMP4RW1pHsbwVUxwyZv3"
@@ -94,11 +95,10 @@ def get_item_list(point_id=None):
 
 def catalog_sync(customer_id):
     "Синхронизирует товары СБИС и БД"
-    logger.debug(f"Начинаю Синхронизирует товары СБИС и БД")
+    logger.debug(f"Начинаю синхронизацию товаров СБИС и БД")
     category_list, product_list = get_item_list(334198)
     logger.debug(f"Извлечено {len(product_list)} товаров из {len(category_list)} категорий")
 
-    customer_instance = Integrations.objects.get(id=customer_id)
     product_objects = []
     for product in product_list:
         logger.debug(f"Обрабатываю {product['name']}")
@@ -107,32 +107,24 @@ def catalog_sync(customer_id):
         description = strip_tags(product['description']) if product['description'] else ''
         unisiter_url = get_product_link(product['name'])
 
-        logger.debug(f"product['category'] - {product['category']}")
-        category_instance = Categories.objects.get(id=product['category'])
-
-        product_obj = Products(
-            customer=customer_instance,
-            name=product['name'],
-            description=description,
-            parameters=parameters,
-            price=product['price'],
-            images=product['images'],
-            category=category_instance,
-            stocks_mol=product['stocks'],
-            unisiter_url=unisiter_url,
-            sbis_id=product['sbis_id'],
-        )
+        product_obj = {
+            'sbis_id': product['sbis_id'],
+            'customer_id': customer_id,
+            'name': product['name'],
+            'description': description,
+            'parameters': parameters,
+            'price': product['price'],
+            'images': product['images'],
+            'category_id': product['category'],
+            'stocks_mol': product['stocks'],
+            'unisiter_url': unisiter_url,
+        }
         product_objects.append(product_obj)
 
     try:
-        Products.objects.bulk_update_or_create(
-            product_objects,
-            unique_fields=['sbis_id'],
-            update_fields=[
-                'name', 'description', 'parameters', 'price', 'images',
-                'category', 'stocks_mol', 'unisiter_url', 'vk_id', 'customer'
-            ]
-)
+        logger.debug(f'Запускаю upsert_products')
+        upsert_products(product_objects)
+        logger.debug(f'Функция upsert_products выполнена')
     except Exception as e:
         logger.error(f'Ошибка {e}')
 

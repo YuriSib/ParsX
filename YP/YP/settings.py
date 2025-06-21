@@ -45,6 +45,7 @@ INSTALLED_APPS = [
 
     'tinymce',
     'rest_framework',
+    'django_q',
 
     'communication',
     'service',
@@ -212,4 +213,14 @@ LOGGING = {
             'propagate': False,
         },
     },
+}
+
+Q_CLUSTER = {
+    'name': 'DjangoQ',
+    'workers': 4,
+    'timeout': 300,
+    'retry': 120,
+    'queue_limit': 50,
+    'bulk': 10,
+    'orm': 'default',
 }

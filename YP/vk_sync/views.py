@@ -13,6 +13,7 @@ from django.http import JsonResponse
 from django.views import View
 from django.shortcuts import redirect
 from django.shortcuts import render
+from django_q.tasks import async_task
 
 
 from YP.logger import logger
@@ -147,7 +148,6 @@ class CheckAuthorizationCodeAPIView(APIView):
         if not code or not product_data:
             return Response({"error": "Missing data"}, status=status.HTTP_400_BAD_REQUEST)
 
-        # 👉 здесь вызывается твоя логика
         try:
             prod_vk_id = self.run_custom_logic(code, product_data)
         except Exception as e:
@@ -165,17 +165,35 @@ class CheckAuthorizationCodeAPIView(APIView):
 
 class VkUpdaterAPIView(APIView):
     def post(self, request):
-        # Синхронизируем СБИС и ВК-маркет
-        customer_id = request.data.get('customer_id')
-        logger.debug(f"customer_id - {customer_id}")
-
-        """В этом месте необходимо реализовать логику, которая возьмет 
-        customer_id и authorization_code и проверит, есть ли такая пара в БД"""
+        """В этом месте необходимо реализовать логику, которая возьмет
+                customer_id и authorization_code и проверит, есть ли такая пара в БД"""
         # check_customer_id(customer_id, authorization_code)
 
-        catalog_sync(customer_id)
+        # Синхронизируем СБИС и ВК-маркет
+        customer_id = request.data.get('customer_id')
+        if not customer_id:
+            logger.error(f"Не переданы данные по customer_id")
+            return Response({"status": "ERROR", "error_desc": f"Не переданы данные по customer_id"})
 
-        # 👉 здесь вызывается твоя логика
+        method = request.data.get('method')
+        if not method:
+            logger.error(f"Не передан method")
+            return Response({"status": "ERROR",
+                             "error_desc": f"Не передан method"})
+        elif method not in ("db_update", "vk_update"):
+            logger.error(f"method может иметь только 2 типа значения - db_update, vk_update")
+            return Response({"status": "ERROR",
+                             "error_desc": f"method может иметь только 2 типа значения - db_update, vk_update"})
+
+        if method == "db_update":
+            logger.info(f"Запускаю фоновую задачу по синхронизации БД со СБИС")
+            # catalog_sync(customer_id)
+            async_task('vk_sync.tasks.catalog_sync_wrapper', customer_id)
+            return Response({"status": "OK",
+                             "message": f"Ожидайте 10 минут до окончания синхронизации каталога"})
+
+        logger.debug(f"customer_id - {customer_id}")
+
         try:
             products = self.get_vk_products()
         except Exception as e:

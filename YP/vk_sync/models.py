@@ -1,5 +1,6 @@
 from django.db import models
 from django.contrib.postgres.fields import ArrayField
+from bulk_update_or_create import BulkUpdateOrCreateQuerySet
 
 
 class Integrations(models.Model):
@@ -27,16 +28,16 @@ class Products(models.Model):
     vk_id = models.IntegerField(unique=True, null=True)
     category = models.ForeignKey(Categories, on_delete=models.SET_NULL, null=True)
     name = models.CharField(max_length=255, unique=True, null=True)
-    description = models.TextField()
-    parameters = models.JSONField()
+    description = models.TextField(null=True)
+    parameters = models.JSONField(null=True)
     images = ArrayField(
-        models.CharField(max_length=100),
+        models.TextField(),
         blank=True,
-        default=list
+        default=list,
+        null=True
     )
-    price = models.IntegerField()
+    price = models.IntegerField(null=True)
     old_price = models.IntegerField(null=True, blank=True)
-    stocks_mol = models.IntegerField()
-    unisiter_url = models.TextField()
+    stocks_mol = models.IntegerField(null=True)
+    unisiter_url = models.TextField(null=True)
     customer = models.ForeignKey(Integrations, on_delete=models.SET_NULL, null=True)
-
