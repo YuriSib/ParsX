@@ -143,7 +143,6 @@ class CheckAuthorizationCodeAPIView(APIView):
         code = last_obj.authorization_code
 
         product_data = request.data.get('product_data')
-        logger.debug(f"code - {code} product_data - {product_data}")
 
         if not code or not product_data:
             return Response({"error": "Missing data"}, status=status.HTTP_400_BAD_REQUEST)

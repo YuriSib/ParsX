@@ -5,6 +5,7 @@ import time
 
 from .models import Integrations, Products, Categories
 from YP.logger import logger
+from .utilits import get_finished_desc
 
 
 SBIS_TOKEN = "rbbew4LZMbof6GNJEWy0ZAz8jRhS3qQRaMLuiWQbcNHUyfj2WCpOswpo86FJyKoEKIT2Rqmmzufc3YHMdp8ZggucdnWRQTvQ56fMP4RW1pHsbwVUxwyZv3"
@@ -113,6 +114,7 @@ class ProductIntegrations:
     @staticmethod
     def download_photo(upload_url, photo_path):
         "Аргумент photo или list или str"
+        logger.debug(f'Запустил функцию загрузки фото в ВК. upload_url-{upload_url}, photo_path-{photo_path}')
         params = {
             'token': upload_url,
         }
@@ -127,7 +129,7 @@ class ProductIntegrations:
 
         response = requests.post('https://pu.vk.com/gu-s/photo/v2/upload', params=params, files=files).json()
         if response.get('error_msg'):
-            logger.error(f'''Ошибка в ответ на запрос - {response.get('error_msg')}''')
+            logger.error(f'''Ошибка в ответ на запрос - {response}''')
             return None
         return response
 
@@ -296,14 +298,95 @@ class ProductIntegrations:
             return response['response']['market_item_id']
 
     def sync_one_prod(self, auth_code, product_data):
-        sbis_id = product_data['sbis_id']
-        pic_urls = product_data['pic_urls']
-        vk_category_id = product_data['vk_category_id']
-        name = product_data['name']
-        desc = product_data['desc']
-        site_link = product_data['site_link']
-        price = product_data['price']
-        old_price = product_data['old_price']
+        try:
+            logger.warning(f"Внимание! При записи в БД объекта категории, родительские категории не создаются!")
+            sbis_id = product_data['sbis_id']
+            name = product_data['name']
+            site_link = product_data['site_link']
+            desc = product_data['desc']
+            category_id = product_data['category']
+            category_name = product_data['category_name']
+            category_parent_id = product_data['category_parent_id']
+            price = product_data['price']
+            old_price = product_data['old_price'] if product_data['old_price'] else None
+            pic_urls = product_data['pic_urls']
+            parameters = product_data['params']
+        except Exception as e:
+            logger.error(f"Произошла ошибка при извлечении значения из словаря product_data - {e}")
+            return None
+
+        try:
+            customer = Integrations.objects.get(authorization_code=auth_code)
+        except Exception as E:
+            logger.error(f"Ошибка при получении customer_id из Integrations {E}")
+            return None
+
+        "Проверим, если товара нет в БД, придется добавлять его в БД"
+        product_obj = Products.objects.filter(sbis_id=sbis_id).first()
+        if not product_obj:
+            logger.info(f"Товара {name} нет в БД.")
+
+            logger.info(f"Проверяю, есть ли такая категория в БД.")
+            category_obj = Categories.objects.filter(id=category_id).first()
+            if category_obj:
+                logger.debug(f'Категория есть в БД. Добавляю товар в БД и в Маркет.')
+
+                try:
+                    Products.objects.create(
+                        sbis_id=sbis_id,
+                        name=name,
+                        description=desc,
+                        parameters=parameters,
+                        images=pic_urls,
+                        price=price,
+                        old_price=old_price,
+                        customer=customer,
+                        category=category_obj
+                    )
+
+                    vk_category_id = category_obj.vk_id
+                except Exception as e:
+                    logger.error(f"Ошибка при добавлении в модель Products - {e}")
+                    return None
+
+            else:
+                logger.warning(f'Категории {category_id} нет в БД. Добавляю товар и категорию в БД.')
+
+                try:
+                    category_obj = Categories.objects.create(
+                        id=category_id,
+                        name=category_name,
+                        parent_id=category_parent_id
+                    )
+                except Exception as e:
+                    logger.error(f"Ошибка при добавлении в модель Categories - {e}")
+                    return None
+
+                try:
+                    Products.objects.create(
+                        sbis_id=sbis_id,
+                        name=name,
+                        description=desc,
+                        parameters=parameters,
+                        images=pic_urls,
+                        price=price,
+                        old_price=old_price,
+                        customer=customer,
+                        category=category_obj
+                    )
+                except Exception as e:
+                    logger.error(f"Ошибка при добавлении в модель Products - {e}")
+                    return None
+
+                logger.warning(f'Товар добавлен в БД, но необходимо проставить vk_id в модели Categories!')
+                return None
+        else:
+            logger.debug(f"Товар есть уже в БД, извлекаю его vk_category_id")
+            category_obj = Categories.objects.filter(id=category_id).first()
+            vk_category_id = category_obj.vk_id
+            if not vk_category_id:
+                logger.warning(f"Не определен vk_id!")
+                return None
 
         "получаем access_token"
         access_token = self.auth(auth_code)
@@ -322,8 +405,8 @@ class ProductIntegrations:
         url = self.get_url(access_token)
         product_data = self.download_photo(url, photo_path=str(main_photo_path))
         photo_id = self.get_photo_id(product_data, access_token=access_token)
-        prod_vk_id = self.add_product(vk_category_id, photo_id, name=name, desc=desc, site_link=site_link,
-                                      price=price, access_token=access_token)
+        prod_vk_id = self.add_product(vk_category_id, photo_id, name=name, desc=get_finished_desc(desc),
+                                      site_link=site_link, price=price, access_token=access_token, old_price=old_price)
         return prod_vk_id
 
 

@@ -4,12 +4,13 @@ import json
 import aiohttp
 import asyncio
 from pathlib import Path
+import traceback
 
 from bulk_update_or_create import BulkUpdateOrCreateQuerySet
 
 from .models import Products, Categories, Integrations
 from YP.logger import logger
-from .get_from_unisiter import get_product_link
+from .get_from_unisiter import get_product_link, get_price
 from .utilits import strip_tags
 from .sql_magic import upsert_products
 
@@ -80,6 +81,8 @@ def get_item_list(point_id=None):
         if product["isParent"]:
             category_list.append((product["hierarchicalId"], product["hierarchicalParent"], product["name"]))
         elif not product["isParent"]:
+            # if product['name'] == "Грунт Живая земля универсал. 50л":
+            #     logger.info(f"""При подтягивании из СБИС, товар "Грунт Живая земля универсал". 50л имеет цену {product['cost']  }""")
             product_list.append(({
                 'sbis_id': product['nomNumber'],
                 'name': product['name'],
@@ -95,6 +98,8 @@ def get_item_list(point_id=None):
 
 def catalog_sync(customer_id):
     "Синхронизирует товары СБИС и БД"
+    logger.debag(f"catalog_sync вызван для customer_id={customer_id}")
+    traceback.print_stack()
     logger.debug(f"Начинаю синхронизацию товаров СБИС и БД")
     category_list, product_list = get_item_list(334198)
     logger.debug(f"Извлечено {len(product_list)} товаров из {len(category_list)} категорий")
@@ -107,13 +112,18 @@ def catalog_sync(customer_id):
         description = strip_tags(product['description']) if product['description'] else ''
         unisiter_url = get_product_link(product['name'])
 
+        old_price, price = None, None
+        # if unisiter_url:
+        #     old_price, price = get_price(f'https://polezniemelochi.ru{unisiter_url}')
+
         product_obj = {
             'sbis_id': product['sbis_id'],
             'customer_id': customer_id,
             'name': product['name'],
             'description': description,
             'parameters': parameters,
-            'price': product['price'],
+            'old_price': old_price,
+            'price': price,
             'images': product['images'],
             'category_id': product['category'],
             'stocks_mol': product['stocks'],
