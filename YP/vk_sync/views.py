@@ -144,11 +144,16 @@ class CheckAuthorizationCodeAPIView(APIView):
 
         product_data = request.data.get('product_data')
 
+        fields = [item[0] for item in product_data.items()]
+        logger.debug(f"Post запросом были переданы следующие значения - {fields}")
+
         if not code or not product_data:
             return Response({"error": "Missing data"}, status=status.HTTP_400_BAD_REQUEST)
 
         try:
             prod_vk_id = self.run_custom_logic(code, product_data)
+            if type(prod_vk_id) is dict:
+                return Response({"ERROR": prod_vk_id['ERROR']})
         except Exception as e:
             logger.error(f"Ошибка синхронизации - {e}")
         else:
