@@ -39,5 +39,5 @@ class Products(models.Model):
     price = models.IntegerField(null=True)
     old_price = models.IntegerField(null=True, blank=True)
     stocks_mol = models.IntegerField(null=True)
-    unisiter_url = models.TextField(null=True)
+    site_link = models.TextField(null=True)
     customer = models.ForeignKey(Integrations, on_delete=models.SET_NULL, null=True)

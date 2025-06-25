@@ -102,7 +102,7 @@ class ProductIntegrations:
 
         if resp.get('error'):
             logger.error(f'''Ошибка в ответ на запрос - {resp.get('error')}''')
-            return None
+            return {'ERROR': resp['error']}
 
         upload_url, bulk_upload = resp['response'].get('upload_url'), resp['response'].get('bulk_upload')
 
@@ -114,7 +114,7 @@ class ProductIntegrations:
     @staticmethod
     def download_photo(upload_url, photo_path):
         "Аргумент photo или list или str"
-        logger.debug(f'Запустил функцию загрузки фото в ВК. upload_url-{upload_url}, photo_path-{photo_path}')
+        logger.debug(f'Запустил функцию загрузки фото в ВК.')
         params = {
             'token': upload_url,
         }
@@ -130,11 +130,12 @@ class ProductIntegrations:
         response = requests.post('https://pu.vk.com/gu-s/photo/v2/upload', params=params, files=files).json()
         if response.get('error_msg'):
             logger.error(f'''Ошибка в ответ на запрос - {response}''')
-            return None
+            return {'ERROR': response['error_msg']}
         return response
 
     @staticmethod
     def get_photo_id(photo_data, access_token, one_photo=True):
+        logger.debug("Получаю photo_id")
         method = 'market.saveProductPhoto' if one_photo else 'market.saveProductPhotoBulk'
         upload_response = json.dumps(photo_data)
 
@@ -147,7 +148,7 @@ class ProductIntegrations:
         response = requests.post(f'''https://api.vk.com/method/{method}''', data=data).json()
         if response.get('error'):
             logger.error(f'''Ошибка в ответ на запрос - {response['error']['error_msg']}''')
-            return None
+            return {'ERROR': response['error_msg']}
         return response['response'].get('photo_id')
 
     @staticmethod
@@ -155,6 +156,7 @@ class ProductIntegrations:
         price = str(price)
         """Передалать метод таким образом, чтобы параметры запроса добавлялись в словарь в зависимости от наличия.
         Например, если old_price не будет передан, возникнет ошибка."""
+        logger.debug('Добавляю товар')
         data = {
             'owner_id': -VK_owner_id,
             'name': name,
@@ -300,17 +302,20 @@ class ProductIntegrations:
     def sync_one_prod(self, auth_code, product_data):
         try:
             logger.warning(f"Внимание! При записи в БД объекта категории, родительские категории не создаются!")
+
             sbis_id = product_data['sbis_id']
             name = product_data['name']
             site_link = product_data['site_link']
-            desc = product_data['desc']
+            desc = product_data['description']
             category_id = product_data['category']
             category_name = product_data['category_name']
             category_parent_id = product_data['category_parent_id']
             price = product_data['price']
-            old_price = product_data['old_price'] if product_data['old_price'] else None
-            pic_urls = product_data['pic_urls']
-            parameters = product_data['params']
+            old_price = product_data['old_price'] if product_data.get('old_price') else None
+            pic_urls = product_data['images']
+
+            product_data.pop('category_parent_id', None)
+            product_data.pop('category_name', None)
         except Exception as e:
             logger.error(f"Произошла ошибка при извлечении значения из словаря product_data - {e}")
             return None
@@ -329,20 +334,10 @@ class ProductIntegrations:
             logger.info(f"Проверяю, есть ли такая категория в БД.")
             category_obj = Categories.objects.filter(id=category_id).first()
             if category_obj:
+                product_data['category'] = category_obj
                 logger.debug(f'Категория есть в БД. Добавляю товар в БД и в Маркет.')
-
                 try:
-                    Products.objects.create(
-                        sbis_id=sbis_id,
-                        name=name,
-                        description=desc,
-                        parameters=parameters,
-                        images=pic_urls,
-                        price=price,
-                        old_price=old_price,
-                        customer=customer,
-                        category=category_obj
-                    )
+                    Products.objects.create(**product_data)
 
                     vk_category_id = category_obj.vk_id
                 except Exception as e:
@@ -363,17 +358,7 @@ class ProductIntegrations:
                     return None
 
                 try:
-                    Products.objects.create(
-                        sbis_id=sbis_id,
-                        name=name,
-                        description=desc,
-                        parameters=parameters,
-                        images=pic_urls,
-                        price=price,
-                        old_price=old_price,
-                        customer=customer,
-                        category=category_obj
-                    )
+                    Products.objects.create(**product_data)
                 except Exception as e:
                     logger.error(f"Ошибка при добавлении в модель Products - {e}")
                     return None
@@ -383,6 +368,7 @@ class ProductIntegrations:
         else:
             logger.debug(f"Товар есть уже в БД, извлекаю его vk_category_id")
             category_obj = Categories.objects.filter(id=category_id).first()
+            product_data['category'] = category_obj
             vk_category_id = category_obj.vk_id
             if not vk_category_id:
                 logger.warning(f"Не определен vk_id!")
@@ -403,10 +389,18 @@ class ProductIntegrations:
             return 'изображения нет в каталоге'
 
         url = self.get_url(access_token)
+        if 'ERROR' in url:
+            return {"ERROR": f"Ошибка при выполнении метода get_url - {url['ERROR']}"}
         product_data = self.download_photo(url, photo_path=str(main_photo_path))
+        if 'ERROR' in product_data:
+            return {"ERROR": f"Ошибка при выполнении метода download_photo - {product_data['ERROR']}"}
         photo_id = self.get_photo_id(product_data, access_token=access_token)
+        if type(photo_id) is dict:
+            return {"ERROR": f"Ошибка при выполнении метода photo_id - {photo_id['ERROR']}"}
         prod_vk_id = self.add_product(vk_category_id, photo_id, name=name, desc=get_finished_desc(desc),
                                       site_link=site_link, price=price, access_token=access_token, old_price=old_price)
+        if type(prod_vk_id) is dict:
+            return {"ERROR": f"Ошибка при выполнении метода prod_vk_id - {prod_vk_id['ERROR']}"}
         return prod_vk_id
 
 
